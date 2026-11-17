@@ -1202,6 +1202,8 @@ invest=function(t){
  const panel=layout?.querySelector('aside.v6-trade-panel');
  const chart=panel?.querySelector('.v60-chart-panel');
  if(!layout||!panel||!chart)return html;
+ // The old V5.9 purchase-reason selector is no longer shown in trading.
+ panel.querySelector('.v59-reason')?.remove();
  const a=AS(S.ui.selected);
  const level=a.sig<=10?'Very low':a.sig<=20?'Moderate':a.sig<=30?'High':a.sig<=40?'Very high':'Extreme';
  const cls=level==='Very low'?'swing-vlow':level==='Moderate'?'swing-mod':level==='High'?'swing-high':level==='Very high'?'swing-vhigh':'swing-extreme';
