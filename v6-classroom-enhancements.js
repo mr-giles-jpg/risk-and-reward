@@ -149,7 +149,8 @@ function simplePriceStory(t){
  else if(newsUp!==priceUp)comparison=newsUp?'The headline gave prices a positive push, but other simulated movements were stronger and the investment still fell.':'The headline put downward pressure on prices, but other simulated movements were stronger and the investment still rose.';
  else if((fx.post>0&&fx.random<-.01)||(fx.post<0&&fx.random>.01))comparison='The news and the other market movements pulled in opposite directions, so the overall change was smaller than it might have been.';
  else comparison='The news and other market movements pushed in the same direction this time.';
- return `<b>News: ${headline}.</b> ${fact} ${comparison} <span class="v6-example">For example, good sales news may still disappoint investors who expected even better results.</span>`;
+ const example=newsUp&&change<0?'For example, stronger demand may have been expected, but company earnings could still disappoint.':newsUp&&fx.random<0?'For example, rising costs could reduce the benefit from stronger sales.':!newsUp&&change>0?'For example, businesses might adapt to higher costs or find new customers.':'For example, weaker demand or higher costs could reduce profits.';
+ return `<b>News: ${headline}.</b> ${fact} ${comparison} <span class="v6-example">${example}</span>`;
 }
 const previousReview=resultsOverlay;
 resultsOverlay=function(t){
