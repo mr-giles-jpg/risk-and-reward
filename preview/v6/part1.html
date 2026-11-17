@@ -155,7 +155,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}th{font-size:.72rem;l
 </style></head><body><div id="app"></div><div id="modal"></div><div id="toast"></div><div id="report-preview" aria-live="polite"></div><input type="file" id="import-file" accept="application/json,.json" hidden/><script>
 'use strict';
 /* RISK & REWARD V5: all prices and events are fictional teaching simulations */
-const GAME_VERSION=58, PART=1, STORE='riskreward_student_p'+PART+'_v60_preview', PRIOR_STORE='riskreward_student_p'+PART+'_v60_preview_previous';
+const GAME_VERSION=58, PART=1, STORE='riskreward_student_p'+PART+'_v60_stage2', PRIOR_STORE='riskreward_student_p'+PART+'_v60_stage2_previous';
 const READ_DELAY_MS=8000, REVIEW_DELAY_MS=6000, MIN_TRADE_MS=5000;
 const CY=3, YEAR_COUNT=10, TOTAL_CYCLES=30;
 const F=['market','tech','mining','energy','rates','trade','consumer','property','safety','copper'];
@@ -909,6 +909,267 @@ performance=function(t){let html=v60PriorPerformance(t);const data=t.history.fil
 // Remove two repeated teaching phrases only from the Shares guide; keep investment introductions intact.
 const v60OldGroupGuide=groupGuide;
 groupGuide=function(g){let html=v60OldGroupGuide(g);if(g==='shares'){html=html.replace('A share represents part-ownership of one business. Profits, costs and unexpected news can change its price.','').replace(/<p class="lead">[\s\S]*?<\/p>/i,'');}if(g==='commodities'){html=html.replace(/<button\b[^>]*\bdata-term="commodity"[^>]*>([\s\S]*?)<\/button>/gi,'$1');}return html};
+})();
+
+</script><script>
+/* Risk & Reward V6.0 Stage 2: education-first interface and balanced market preview.
+   Self-contained, deterministic per saved seed; no external scripts or remote services. */
+(function(){
+'use strict';
+const v6Styles = `
+:root{--v6-blue:#dceefc;--v6-amber:#f8be3b;--v6-green:#1fcda3;--v6-red:#f07883}
+.top.v60-top{gap:8px;padding:7px 14px;min-height:57px}
+.top .v60-top-state .tag{font-size:12px;padding:5px 7px}
+.v6-top-finish{font-size:15px!important;font-weight:900!important;min-height:45px!important;background:#f8be3b!important;color:#102844!important;border:2px solid #ffdc79!important;box-shadow:0 1px 0 #62460a}
+.v6-top-finish:disabled{opacity:.6!important}
+.v6-top-save{font-size:12px!important;min-height:40px!important;padding:6px 9px!important;background:#183452!important;color:#c2d8ea!important;border:1px solid #4c6884!important}
+.v6-timer{font-size:17px!important;font-weight:900!important;letter-spacing:.04em;border:2px solid #ffd368!important;color:#ffe38d!important;background:#392c1a!important;padding:7px 13px!important;min-width:88px;text-align:center}
+.v60-wallet .w-item.total{background:#183653!important;border:1px solid #396187!important}.v60-wallet .w-item.total .w-num{color:#4cedb8!important;font-size:clamp(19px,1.8vw,25px)!important}
+.v60-wallet .w-item .w-sub{font-size:11px}.v60-session{margin-bottom:7px}.v60-session .banner{padding:8px 12px;min-height:42px;font-size:14px}.v60-session .banner.green .btn{display:none!important}
+.v60-student .v60-news-strip{margin:5px 0 8px;min-height:50px;padding:8px 12px}
+.v60-student .group-tabs{margin:4px 0 7px}.v60-student .group-tabs button{padding:7px 12px;min-height:37px;font-size:15px}
+.v60-student .group-guide{padding:9px 12px!important;margin-bottom:9px!important}
+.group-guide summary{font-size:16px!important;line-height:1.35}.v6-guide-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
+.v6-guide-item{border:1px solid #426a91;border-left:3px solid #3cd7bd;background:#0e2d4b;padding:8px 10px;border-radius:7px}
+.v6-guide-item b{display:block;color:#f4faff;font-size:14px}.v6-guide-item p{margin:3px 0!important;font-size:13px;line-height:1.4;color:#d4e9fa}
+.v6-guide-intro{font-size:14px;line-height:1.45;margin:8px 0;color:#d4e9fa}
+.main-market-layout{grid-template-columns:minmax(0,2fr) minmax(0,3fr)!important;gap:11px!important;align-items:start}
+.main-market-layout .market-list{min-width:0}.v6-list{grid-template-columns:minmax(0,1fr)!important;gap:7px!important;max-width:none}
+.v6-list .tile{min-height:0!important;margin:0!important;border-radius:9px!important}
+.v6-list .tile-main{padding:10px 13px!important;display:block!important;min-height:70px!important}
+.v6-list .v6-asset-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.v6-list .v6-asset-text{flex:1 1 45%;min-width:0}
+.v6-list .v6-asset-name{display:block;font-size:16px;font-weight:850;line-height:1.28;color:#f4fbff}
+.v6-list .v6-asset-sub{display:block;color:#b3d4eb;font-size:12px;margin:3px 0 0;line-height:1.3}
+.v6-list .v6-asset-financial{text-align:right;min-width:93px;flex:0 1 45%}
+.v6-list .v6-asset-price{font-size:19px;font-weight:850;color:white;white-space:nowrap}
+.v6-list .v6-asset-change{font-size:17px;font-weight:900}.v6-list .v6-asset-change.pos{color:#36e5ac}.v6-list .v6-asset-change.neg{color:#ff8d95}
+.v6-list .v6-asset-held{font-size:13px;font-weight:750;color:#cde9fa;line-height:1.3;margin-top:4px}
+.v6-list .tile.locked{padding:10px 14px!important;min-height:58px!important;opacity:.67}
+.v6-list .tile.sel{border-color:#3fe0cc!important;box-shadow:0 0 0 1px #3fe0cc}
+.trade-panel.v6-trade-panel{position:sticky;top:calc(var(--hh,64px) + var(--wh,100px) + 7px);max-height:calc(100vh - var(--hh,64px) - var(--wh,100px) - 16px);overflow-y:auto;overscroll-behavior:contain;padding:11px 13px!important;scrollbar-width:thin}
+.trade-panel.v6-trade-panel .tp-head h3{font-size:17px;margin:0}
+.trade-panel.v6-trade-panel .tp-price{margin:4px 0!important;font-size:15px}.trade-panel.v6-trade-panel .tp-price b{font-size:23px}
+.trade-panel.v6-trade-panel .tp-description{font-size:13px;line-height:1.4;margin:5px 0}
+.trade-panel.v6-trade-panel .v6-asset-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:7px 0}
+.v6-asset-metrics>div{background:#183d5c;border:1px solid #375f80;padding:6px 8px;border-radius:7px;min-width:0}
+.v6-asset-metrics small{font-size:11px;display:block;color:#c3daee}.v6-asset-metrics b{font-size:15px;color:#f7fdff;display:block}
+.trade-panel.v6-trade-panel .tp-holding{font-size:13px;line-height:1.4;padding:7px 10px;margin:5px 0!important}
+.trade-panel.v6-trade-panel .trade-entry{margin:7px 0 0!important}.trade-panel.v6-trade-panel .trade-entry>label{font-size:14px}
+.trade-panel.v6-trade-panel .inline-controls{gap:5px}.trade-panel.v6-trade-panel .inline-controls .btn,.trade-panel.v6-trade-panel .inline-controls input{min-height:41px!important;font-size:14px!important;padding:6px!important}
+.trade-panel.v6-trade-panel .inline-controls button[onclick*="max"],.trade-panel.v6-trade-panel .inline-controls button[onclick*="all"]{flex:1 1 70px}
+.trade-panel.v6-trade-panel .tp-sum{padding:7px 9px;margin:6px 0;font-size:13px}.trade-panel.v6-trade-panel .v60-order strong{font-size:19px}
+.trade-panel.v6-trade-panel .v60-order-hint{font-size:11px}.trade-panel.v6-trade-panel .trade-buttons .btn{min-height:41px;font-size:16px}
+.trade-panel.v6-trade-panel .tp-status{margin:5px 0!important;font-size:12px}
+.trade-panel.v6-trade-panel .v60-chart-panel{padding:7px;margin:6px 0}.trade-panel.v6-trade-panel .v60-chart-head h4{font-size:14px}.trade-panel.v6-trade-panel .v60-chart-return{font-size:18px}
+.trade-panel.v6-trade-panel .v60-chart-tabs{margin:3px 0}.trade-panel.v6-trade-panel .v60-chart-tabs button{padding:4px 8px;min-height:30px;font-size:12px}
+.trade-panel.v6-trade-panel .v60-chart-svg{max-height:150px}.trade-panel.v6-trade-panel .v60-chart-foot{display:none}
+.v6-controls{padding:5px 0;background:#102744;border-top:1px solid #355c7e}
+.v6-chart-note{color:#b6d2e7;font-size:12px;line-height:1.35;margin-top:5px}
+.v6-bank-extras{display:flex;gap:6px;margin:7px 0;flex-wrap:wrap}.v6-bank-extras .btn{min-height:36px;padding:5px 12px;font-size:13px;font-weight:800}
+.savings{padding:14px!important}.savings-grid{gap:14px!important}.savings-grid>div{padding:0 4px}.savings .subheading{font-size:17px!important}.savings p{margin:5px 0!important}.savings .bank-actions{gap:6px;margin:8px 0}.savings .bank-actions .btn{min-height:42px!important}
+.savings .deposit-option{padding:7px 0!important}.savings .deposit-option>div{display:flex;flex-direction:column;gap:4px}.savings .deposit-option strong{font-size:15px}.savings .v6-apy{font-size:16px;color:#5ae9b9;font-weight:900}.savings .deposit-option .small{font-size:13px}.savings label{margin:5px 0}.savings .reason{font-size:12px}
+.v6-intro.dialog{max-width:900px!important;max-height:94vh;overflow:auto}
+.v6-intro .dialog-meta{font-size:14px}.v6-intro .lead{font-size:17px;margin:6px 0 11px}
+.v6-intro .intro-grid{gap:8px}.v6-intro .intro-card{background:#d7ecf9;border:1px solid #a7cee5;border-left:4px solid var(--c,#27b1ab);color:#123c58;min-height:0;padding:10px 12px}
+.v6-intro .intro-card b{font-size:16px;color:#103654}.v6-intro .intro-card span{color:#275576;font-size:13px;line-height:1.4}
+.v6-risk-reward{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:10px 0}
+.v6-upside,.v6-downside{border-radius:10px;padding:12px 15px;border:1px solid #9dcdb9;background:#dbf1e6;color:#164d3b}
+.v6-downside{background:#f9e4e4;border-color:#e8aeb4;color:#76333b}
+.v6-risk-reward h3{font-size:17px;margin:0 0 5px;color:inherit}.v6-risk-reward p{font-size:14px;margin:0;line-height:1.45;color:inherit}
+.v6-intro .intro-actions .btn{background:var(--v6-amber)!important;color:#10283b!important;border-color:#ffe29b!important;font-weight:900!important;font-size:17px;min-height:48px}
+.v60-news-dialog{padding:20px!important}.v60-news-dialog h2{font-size:clamp(27px,3vw,33px)!important;margin:6px 0 10px!important}
+.v60-news-dialog .v6-news-lead{font-size:19px;line-height:1.55;color:#194562;margin:8px 0 12px}
+.v60-news-dialog .v60-news-info{padding:9px 12px;margin:9px 0}.v60-news-dialog .v60-news-info h3{font-size:18px;margin:0 0 4px}
+.v60-news-dialog .v60-news-info p{font-size:16px;line-height:1.45}
+.v60-news-dialog .v6-risk-reward{margin:10px 0}.v60-news-dialog .v6-risk-reward h3{font-size:18px}.v60-news-dialog .v6-risk-reward p{font-size:16px;line-height:1.45}
+.v60-news-dialog .v6-news-question{background:#fdf1d8;border:1px solid #edc984;border-left:5px solid #e9a329;border-radius:9px;padding:9px 12px;color:#1e475f;font-size:16px;margin:8px 0}
+.v60-news-dialog .review-cta .btn{background:#1676c8!important;color:white!important}
+.v6-review-dialog{border:2px solid #507ca4!important;background:#142c4e!important;padding:18px 20px!important}
+.v6-review-dialog.annual{border-color:#ffc947!important;box-shadow:0 0 0 2px #684f12}
+.v6-review-dialog .v6-annual-flag{background:#f2c049;color:#102b45;font-weight:900;border-radius:8px;padding:9px 12px;font-size:17px;margin:0 0 12px}
+.v6-review-dialog .v59-hero{margin:10px 0}.v6-review-dialog .v59-value{padding:10px}.v6-review-dialog .v59-value strong{font-size:22px}
+.v6-review-dialog .v6-price-explain{background:#20466b;border-radius:8px;padding:9px 12px;margin:9px 0;color:#dceefe;font-size:14px;line-height:1.4}
+.v6-review-dialog .v59-table{font-size:14px}.v6-review-dialog .v59-table th,.v6-review-dialog .v59-table td{padding:6px 8px}
+.v6-review-dialog .v6-next{background:#f4bb3e!important;border-color:#ffdc79!important;color:#153048!important;font-size:17px!important;font-weight:900!important;min-height:49px!important}
+.v6-confirm-dialog{max-width:560px!important;border:2px solid #e0b448!important}.v6-confirm-dialog h2{font-size:25px}.v6-confirm-warning{background:#4b381b;border-left:4px solid #ffd47e;padding:12px;color:#ffe4a5;border-radius:8px;margin:10px 0}
+.v6-confirm-values{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.v6-confirm-values>div{background:#0c233b;border:1px solid #436589;padding:10px;border-radius:8px}
+.v6-confirm-values small{display:block;color:#bbd6ef}.v6-confirm-values strong{display:block;font-size:20px;color:white}
+.v6-confirm-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.v6-confirm-actions .btn{font-size:17px;min-height:48px;flex:1}
+.v6-yellow{background:#f4bb3e!important;border-color:#ffd979!important;color:#122c46!important;font-weight:900!important}
+.v6-performance{display:flex;flex-direction:column;gap:11px}.v6-performance .panel,.v6-performance .v59-card{margin:0!important}
+.v6-performance-quick{background:#173452;padding:14px;border:1px solid #46769e;border-radius:12px}
+.v6-performance-quick h2{font-size:21px;margin:0 0 5px}.v6-performance-quick p{font-size:14px;margin:5px 0;color:#daecff}
+.v6-performance-quick .v6-kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.v6-performance-quick .v6-kpis>div{border:1px solid #365e83;padding:10px;border-radius:8px;background:#102843}
+.v6-performance-quick .v6-kpis small{display:block;color:#b9d2e9;font-size:12px}.v6-performance-quick .v6-kpis strong{display:block;font-size:clamp(17px,1.6vw,25px);margin-top:4px;overflow-wrap:anywhere}
+.v6-performance .v59-featured{border:2px solid #f2be43!important;background:#1a3757!important;padding:14px!important}
+.v6-performance .v59-featured h2{font-size:21px}.v6-performance .v59-featured p{font-size:15px}
+.v6-performance .v59-table th,.v6-performance .v59-table td{font-size:15px;padding:8px 10px}
+.v6-performance .v59-table input{font-size:15px;min-height:42px}
+.v6-perf-nav{display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap}
+.v6-checkpoint{border:2px solid #f3c34d!important;background:#16365b!important;padding:15px!important}
+.v6-checkpoint h2{font-size:23px}.v6-checkpoint .v6-evidence-line{display:flex;gap:10px;flex-wrap:wrap;margin:9px 0}
+.v6-checkpoint .v6-evidence-line span{flex:1;background:#0c2947;border:1px solid #37618e;border-radius:8px;padding:9px;min-width:160px}
+.v6-wealth-compact{padding:12px!important}.v6-wealth-compact h2{margin:0 0 3px}.v6-wealth-compact .line-graph{max-height:195px}
+.v6-wealth-compact .v60-year-block{min-width:0}.v6-wealth-compact .v60-year-block strong{font-size:clamp(13px,1.35vw,18px);overflow-wrap:anywhere;word-break:normal;font-variant-numeric:tabular-nums}
+.v6-holdings h2{font-size:20px}.v6-holdings table{font-size:14px}.v6-holdings td,.v6-holdings th{padding:7px 8px}
+.v6-finish-screen{border:2px solid #f4c751;padding:15px!important;background:#14385b!important}
+.v6-finish-screen h2{font-size:23px}.v6-finish-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.v6-finish-actions .btn{min-height:49px;font-size:16px}
+.v6-home-learn{background:#163a56;border:1px solid #447ca3;padding:13px 15px;border-radius:10px;margin-top:14px}
+.v6-home-learn .btn{font-size:15px}
+@media(max-width:1160px){.v60-nav button{padding:7px;font-size:12px}.v6-list .v6-asset-name{font-size:14px}.v6-list .v6-asset-price{font-size:16px}.main-market-layout{grid-template-columns:minmax(0,2fr) minmax(0,3fr)!important}}
+
+@media(max-width:1120px){.top.v60-top{gap:5px!important;padding:5px 10px!important}.top .brand small{display:none!important}.top .brand span{font-size:14px!important}.v60-top-state .tag{font-size:10px!important;padding:5px 6px!important}.v60-nav{margin-left:auto!important;gap:0!important}.v60-nav button{font-size:11px!important;padding:5px 6px!important;min-height:36px!important}.v6-top-finish{font-size:13px!important;padding:7px 10px!important;min-height:40px!important}.v6-top-save{font-size:11px!important;padding:6px!important}.top-right.v60-actions{gap:4px!important}}
+@media(max-width:980px){.main-market-layout{grid-template-columns:minmax(0,1fr)!important}.trade-panel.v6-trade-panel{position:static;max-height:none;overflow:visible}.v6-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}.v6-performance-quick .v6-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.v6-list{grid-template-columns:1fr!important}.v6-risk-reward{grid-template-columns:1fr}.v6-performance-quick .v6-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.v6-confirm-values{grid-template-columns:1fr}.v6-wealth-compact .v60-year-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.v6-top-finish,.v6-top-save,.v6-confirm-dialog{display:none!important}}
+`;
+const st=document.createElement('style');st.id='v6-stage2-style';st.textContent=v6Styles;document.head.appendChild(st);
+
+// Small, explicit financial assumptions: stronger property income and more balanced company risk.
+// This is NOT a guaranteed crash, return floor, or diversification reward.
+A.find(a=>a.id==='TECH').mu=7;
+const v6Property=A.find(a=>a.id==='PROP');v6Property.mu=2.5;v6Property.yield=4.5;v6Property.exp.rates=-.4;
+// Competition and weak profits can particularly affect a concentrated technology position.
+V54_BEATS[10][3].tech=-2.5; // Year 4: Competition intensifies
+V54_BEATS[25][3].tech=-2.5; // Year 9: Weaker business profits
+V54_BEATS[26][3].tech=-4;   // Year 9: Broad downturn
+
+// Market calibration. All random inputs are seeded, so students can reload exactly.
+const originalNewsImpact=newsImpact, originalAssetStochastic=assetStochastic;
+function v6EventStrength(beat){const y=beat?.year||1;if(y<=1)return 1;if(y===2)return 1.35;if(y<=5)return 2.5;if(y===6)return 2.8;if(y<=8)return 2.5;if(y===9)return 2.1;return 1.9}
+newsImpact=function(a,beat){const base=originalNewsImpact(a,beat);return Math.max(-.18,Math.min(.18,base*v6EventStrength(beat)))};
+function v6RandomFactor(a){return a.group==='shares'?.67:a.group==='commodities'?.77:a.id==='BOND'?.90:.79}
+assetStochastic=function(state,a,cyc){const original=originalAssetStochastic(state,a,cyc),sigma=a.sig/100/Math.sqrt(3),scale=v6RandomFactor(a),oldDrift=Math.log(1+a.mu/100)/3-sigma*sigma/2,newDrift=Math.log(1+a.mu/100)/3-(sigma*scale)**2/2;return newDrift+(original-oldDrift)*scale};
+priceForNews=function(state,beat){const moves={};state.v6Factors=state.v6Factors||{};const factors=state.v6Factors[state.cycle]||{};A.forEach(a=>{const effect=newsImpact(a,beat),old=state.prices[a.id].at(-1),newP=round(Math.max(.5,old*Math.exp(.30*effect)));state.prices[a.id].push(newP);moves[a.id]=round(100*(newP/old-1));factors[a.id]={news:effect*100,pre:.30*effect*100,post:.70*effect*100,random:0}});state.v6Factors[state.cycle]=factors;return moves};
+priceForClose=function(state,beat){const moves={};state.v6Factors=state.v6Factors||{};const factors=state.v6Factors[state.cycle]||{};A.forEach(a=>{const before=state.prices[a.id].at(-1),eff=newsImpact(a,beat),random=assetStochastic(state,a,state.cycle),logChange=Math.max(-.54,Math.min(.52,.70*eff+random)),after=round(Math.max(.5,before*Math.exp(logChange)));state.prices[a.id].push(after);moves[a.id]=round(100*(after/before-1));factors[a.id]={news:eff*100,pre:.30*eff*100,post:.70*eff*100,random:random*100,actual:round(100*(after/before-1))}});state.v6Factors[state.cycle]=factors;return moves};
+
+// Consistent short, risk-and-reward education at investment unlocks.
+function v6RiskReward(up,down){return `<div class="v6-risk-reward"><section class="v6-upside"><h3>Potential reward</h3><p>${up}</p></section><section class="v6-downside"><h3>Potential risk</h3><p>${down}</p></section></div>`}
+const v6OriginalIntro=introBody;
+introBody=function(id){const cards=(ids)=>`<div class="intro-grid">${ids.map(code=>{const a=AS(code),line=a.yield?`${a.yield}% modelled annual ${a.id==='BOND'?'coupon':a.id==='PROP'?'distribution':'dividend'} plus possible price changes`:'No income payout; return depends on price changes';return `<div class="intro-card" style="--c:${a.col}"><b>${AICON[code]||'◆'} ${escapeHtml(a.short)}</b><span><strong>${escapeHtml(a.risk)} risk</strong> · ${line}</span></div>`}).join('')}</div>`;
+ if(id==='start')return `<p class="lead">Build a financial strategy over ten economic years. <b>Different products offer different income, growth, access and risk.</b></p>${v6RiskReward('Savings earn interest; bonds may pay coupons; funds may provide investment income and price growth.','Some investments can fall in value. Fixed-term deposits cannot be withdrawn early; higher potential rewards involve uncertainty.')}<div class="intro-grid"><div class="intro-card"><b>💰 Savings account</b><span><strong>${S.savingsRate}% annual interest</strong> · Withdraw during trading</span></div><div class="intro-card"><b>🔒 Fixed-term deposit</b><span><strong>${S.termRates.short}% or ${S.termRates.long}% fixed annual interest</strong> · Money locked until maturity</span></div><div class="intro-card" style="--c:#60a5fa"><b>🏛️ Government bonds</b><span><strong>4.5% annual coupon</strong> · Price can rise or fall</span></div><div class="intro-card" style="--c:#2DD4BF"><b>📊 Australian ETF</b><span><strong>2.5% dividend yield</strong> plus potential price growth · Medium risk</span></div></div><p class="v6-guide-intro">Trading is timed. You can explore without a countdown first, then make your purchases before selecting <b>Finished Trading</b>.</p>`;
+ if(id==='shares')return `<p class="lead">Buying shares makes you a ${ag('shareholder')}. A company's performance and the wider economy can affect the price.</p>${v6RiskReward('Share prices may grow, and some companies pay dividends.','One company can lose considerable value when sales, costs or expectations disappoint. An ETF spreads this company-specific risk.')} ${cards(['SHOP','MINE','TECH','ENERGY'])}`;
+ if(id==='intl')return `<p class="lead">You can now invest internationally and in property. Both offer alternatives to owning individual Australian companies.</p>${v6RiskReward('Overseas companies may grow when Australia slows. Property funds can distribute income from rent.','International markets and exchange conditions can vary. Property prices may fall as financing costs rise or rents weaken.')} ${cards(['GLOBAL','PROP'])}`;
+ if(id==='commod')return `<p class="lead">Gold, copper and oil funds track raw-material prices driven by supply and demand.</p>${v6RiskReward('Shortages or stronger demand can lift commodity prices. Some commodities behave differently from company shares.','Commodity prices can fall rapidly when demand weakens or supply grows. These funds pay <b>no dividend</b> in this game.')} ${cards(['GOLD','COPPER','OIL'])}`;
+ return v6OriginalIntro(id)};
+const v6OldIntroOverlay=introOverlay;
+introOverlay=function(id,pending){let markup=v6OldIntroOverlay(id,pending);return markup.replace('class="dialog intro"','class="dialog intro v6-intro"').replace(/<p class="small">([^<]*)<\/p>/,'')};
+// The expandable guides reinforce the same ideas without repeating the entire introduction.
+groupGuide=function(g){const one=(name,description)=>`<div class="v6-guide-item"><b>${name}</b><p>${description}</p></div>`;let content='';
+ if(g==='banking')content=`<p class="v6-guide-intro"><b>Potential reward:</b> predictable interest. <b>Risk:</b> low, but returns may be slower than investing and deposits lock your money.</p><div class="v6-guide-grid">${one('💰 Savings',`${S.savingsRate}% p.a.; withdraw during trading`)}${one('🔒 Fixed-term deposits',`${S.termRates.short}% or ${S.termRates.long}% fixed p.a.; locked until maturity`)}</div>`;
+ if(g==='funds')content=`<p class="v6-guide-intro"><b>Potential reward:</b> coupons, dividends, rental-style distributions and price growth. <b>Risk:</b> values can fall; diversification reduces company-specific risk but does not remove market risk.</p><div class="v6-guide-grid">${one('🏛️ Government bonds','4.5% modelled coupon; bond prices can fall when interest rates rise')}${one('📊 Australian ETF','2.5% modelled dividend; owns many Australian companies')}${yearsNow(S)>=5?one('🌏 International ETF','2% modelled dividend; exposed to overseas companies')+one('🏘️ Property fund','4% modelled distribution; sensitive to rents and borrowing costs'):''}</div>`;
+ if(g==='shares')content=`<p class="v6-guide-intro">A ${ag('shareholder')} owns shares in a company. <b>Potential reward:</b> price growth and possible dividends. <b>Risk:</b> one company's performance can sharply affect its price.</p><div class="v6-guide-grid">${['SHOP','MINE','TECH','ENERGY'].map(id=>{const a=AS(id);return one(`${AICON[id]} ${escapeHtml(a.short)}`,`${a.yield}% modelled annual dividend · ${escapeHtml(a.risk)} risk`)}).join('')}</div>`;
+ if(g==='commodities')content=`<p class="v6-guide-intro">A commodity is a raw material bought and sold. <b>Potential reward:</b> higher prices when demand rises or supply tightens. <b>Risk:</b> abrupt price falls; no dividends in this game.</p><div class="v6-guide-grid">${one('🥇 Gold','May respond to uncertainty; medium–high risk')}${one('🔩 Copper','Industrial demand from construction and technology; high risk')}${one('🛢️ Oil','Sensitive to supply disruptions and economic demand; high risk')}</div>`;
+ return `<details class="panel compact group-guide"><summary>How do ${g==='banking'?'savings and deposits':g==='funds'?'funds and bonds':g==='shares'?'company shares':'commodities'} work?</summary>${content}</details>`;
+};
+function v6NewsProsCons(beat){const available=A.filter(a=>unlocked(S,a)),changes=available.map(a=>({a,pct:newsImpact(a,beat)*100}));const pos=changes.filter(x=>x.pct>.25).sort((a,b)=>b.pct-a.pct).slice(0,2),neg=changes.filter(x=>x.pct<-.25).sort((a,b)=>a.pct-b.pct).slice(0,2);
+ let up=pos.length?`${pos.map(x=>escapeHtml(x.a.short)).join(' and ')} could receive upward price pressure.`:'Savings and income-producing investments may continue paying interest, coupons or distributions.';
+ let down=neg.length?`${neg.map(x=>escapeHtml(x.a.short)).join(' and ')} could face downward price pressure.`:'Higher business costs, disappointing demand or unpredictable trading may still push relevant prices down.';
+ if(beat.rateShift>0){up=`Savings rates can rise, increasing future interest income. ${up}`;down=`Higher borrowing costs may reduce bond or property-fund prices. ${down}`}
+ if(beat.shock?.copper>0)up='Rising copper demand could support copper-fund prices and mining revenue. '+up;
+ if(beat.shock?.energy>0)down='Higher energy costs can hurt businesses that rely on transport or fuel. '+down;
+ if(beat.shock?.market<0)up='Cash and some bonds may be steadier while the wider market declines. '+up;
+ return {up,down};}
+newsOverlay=function(){const b=S.beat,i=Math.min(29,S.cycle),wait=Math.max(0,Math.ceil((READ_DELAY_MS-(Date.now()-(S.readStartedAt||Date.now())))/1000)),h=v6NewsProsCons(b);return `<div class="shade" role="dialog" aria-modal="true" aria-labelledby="news-title"><div class="dialog v60-news-dialog"><div class="dialog-meta">YEAR ${b.year} · CYCLE ${b.act} · ECONOMIC NEWS</div><h2 id="news-title">${escapeHtml(b.title)}</h2><p class="v6-news-lead">${escapeHtml(b.explanation||b.text)}</p><section class="v60-news-info v60-meaning"><h3>Why it matters</h3><p>${escapeHtml(b.meaning||b.focus)}</p></section><div class="v6-risk-reward"><section class="v6-upside"><h3>Possible upside</h3><p>${h.up}</p></section><section class="v6-downside"><h3>Possible downside</h3><p>${h.down}</p></section></div><section class="v6-news-question"><b>Consider:</b> ${escapeHtml(WATCH_V55[i])}</section><div class="review-cta"><button class="btn primary" id="news-continue" ${S.phase==='news'&&wait?'disabled':''} onclick="UI.dismissNews()">${S.phase!=='news'?'Close news':wait?'Read the news · '+wait+'s':'Continue to trading'}</button></div></div></div>`};
+// Compact investment list, approximately 40% of the market width.
+assetTile=function(a,t){const open=viewable(a),id=a.id,price=assetPrice(S,id),base=S.priceAtCycleStart[id],change=base?100*(price/base-1):0,h=t.hold[id],select=S.ui.selected===id;
+ if(!open)return `<article class="tile locked" style="--asset:${a.col}"><div class="v6-asset-name">${escapeHtml(a.name)}</div><span class="small muted">Unlocks Year ${a.unlock}</span></article>`;
+ const sub=a.yield?`${a.yield}% p.a. ${a.id==='BOND'?'coupon':a.id==='PROP'?'distribution':'dividend'} · ${escapeHtml(a.risk)} risk`:`No income payout · ${escapeHtml(a.risk)} risk`,pnl=h?round(h.qty*price-h.cost):0;
+ return `<article class="tile ${select?'sel':''}" style="--asset:${a.col}"><button type="button" class="tile-main" id="tile-${id}" aria-pressed="${select}" aria-controls="trade-panel" aria-label="Select ${escapeHtml(a.name)}, price ${fm(price)}, change ${fmtPct(change)}" onclick="UI.pick('${id}')"><span class="v6-asset-row"><span class="v6-asset-text"><span class="v6-asset-name"><i class="dot" style="background:${a.col}"></i>${escapeHtml(a.name)}</span><span class="v6-asset-sub">${sub}</span></span><span class="v6-asset-financial"><span class="v6-asset-price">${fm(price)}</span><span class="v6-asset-change ${change>=0?'pos':'neg'}" style="display:block">${fmtPct(change)}</span></span></span><span class="v6-asset-held" style="display:block">${h?`${h.qty} units held · ${pNum(pnl)}`:'Not held'}</span></button></article>`};
+const v6PreviousInvest=invest;
+invest=function(t){const g=curGroup();ensureSelected(g);const top=`${newsStrip()}${groupTabs(g)}${groupGuide(g)}`;if(g==='banking')return `${top}<div id="market-panel" role="tabpanel" aria-labelledby="gt-banking">${savings(t)}</div>`;return `${top}<div class="market-layout main-market-layout"><div class="market-list"><div id="market-panel" role="tabpanel" aria-labelledby="gt-${g}"><div class="tile-grid v6-list">${groupAssets(g).map(a=>assetTile(a,t)).join('')}</div></div></div>${tradePanel(t)}</div>`};
+const v6PreviousTrade=tradePanel;
+tradePanel=function(t){const a=AS(S.ui.selected);if(!a||!viewable(a))return v6PreviousTrade(t);
+ const shell=document.createElement('div');shell.innerHTML=v6PreviousTrade(t);const panel=shell.querySelector('aside.trade-panel');if(!panel)return shell.innerHTML;
+ panel.classList.add('v6-trade-panel');panel.querySelector('.tp-assumptions')?.remove();const risk=panel.querySelector('.v59-risk-box');if(risk){const total=Number((a.mu+a.yield).toFixed(1));risk.outerHTML=`<div class="v6-asset-metrics"><div><small>Modelled return</small><b>${total}% p.a.</b></div><div><small>Investment income</small><b>${a.yield}% p.a.</b></div><div><small>Price swings</small><b>${(a.sig<=10?'Very low':a.sig<=20?'Moderate':a.sig<=30?'High':a.sig<=40?'Very high':'Extreme')}</b></div></div>`}
+ const desc=panel.querySelector('.tp-description');if(desc)desc.title='Investment prices and income are not guaranteed.';
+ const entry=panel.querySelector('.trade-entry');if(entry){const controls=document.createElement('div');controls.className='v6-controls';for(const cls of ['.trade-entry','.tp-sum','.trade-buttons','.tp-status']){const el=panel.querySelector(cls);if(el)controls.appendChild(el)}const chart=panel.querySelector('.v60-chart-panel');if(chart)panel.insertBefore(controls,chart);else if(desc)desc.after(controls);else panel.appendChild(controls)}
+ const chart=panel.querySelector('.v60-chart-panel');if(chart){chart.insertAdjacentHTML('beforeend','<p class="v6-chart-note">Price movements are shown as percentages, not just changes in dollar price. Compare this cycle with the longer trend.</p>')}
+ return panel.outerHTML;
+};
+// Banking gets the same amount-shortcut language as the trading controls.
+const v6OriginalSavings=savings;
+savings=function(t){const wrap=document.createElement('div');wrap.innerHTML=v6OriginalSavings(t);const s=wrap.querySelector('.savings');if(!s)return wrap.innerHTML;
+ const savingIntro=s.querySelector('.savings-grid>div:first-child p.small.muted');if(savingIntro)savingIntro.innerHTML=`<strong class="v6-apy">${S.savingsRate}% p.a.</strong> compound interest · Withdraw during trading.`;
+ const terms=s.querySelectorAll('.deposit-option .small.muted');terms.forEach(e=>{e.innerHTML=e.innerHTML.replace(/(\d+(?:\.\d+)?% p\.a\.)/g,'<strong class="v6-apy">$1</strong>')});
+ const amount=s.querySelector('#bank-amount');if(amount)amount.insertAdjacentHTML('afterend','<div class="v6-bank-extras"><button class="btn subtle" onclick="UI.bankAdd(100)">+ $100</button><button class="btn subtle" onclick="UI.bankAdd(-100)">− $100</button><button class="btn subtle" onclick="UI.bankMax(\'deposit\')">Max available cash</button></div>');
+ const term=s.querySelector('#term-amount');if(term)term.insertAdjacentHTML('afterend','<div class="v6-bank-extras"><button class="btn subtle" onclick="UI.termAdd(100)">+ $100</button><button class="btn subtle" onclick="UI.termMax()">Max cash for deposit</button></div>');
+ return s.outerHTML};
+UI.bankAdd=function(n){const e=$('#bank-amount');if(!e)return;e.value=round(Math.max(0,(Number(e.value)||0)+n));refreshBank()};
+UI.termAdd=function(n){const e=$('#term-amount');if(!e)return;e.value=round(Math.max(100,(Number(e.value)||0)+n))};
+UI.termMax=function(){const e=$('#term-amount');if(e)e.value=Math.max(100,Math.floor(findTeam().cash*100)/100)};
+
+// Students can always finish trading from the persistent header.
+roleHeader=function(){const tag=PART===1?'YEARS 1–5':'YEARS 6–10',explore=S.phase==='explore',timer=S.phase==='trading'?timeFormat(timeLeft(S)):explore?'NO TIMER':S.phase==='news'?'READ NEWS':S.phase==='review'?'REVIEW':'AT YOUR PACE';let nav='';if(S.ui.view==='student'){nav=`<nav class="v60-nav" aria-label="Game navigation">${[['invest','Invest'],['performance','Performance'],['settings','Settings']].map(([id,label])=>`<button type="button" class="${S.ui.studentTab===id?'active':''}" onclick="UI.studentTab('${id}')">${label}</button>`).join('')}</nav>`}
+ const finish=S.ui.view==='student'&&S.phase==='trading'?`<button type="button" id="finish-trading" class="btn v6-top-finish" onclick="UI.finishTrading()">Finished Trading</button>`:'';
+ const start=explore&&S.ui.view==='student'?`<button type="button" class="btn v6-top-finish" onclick="UI.startYear1()">Start Year 1</button>`:'';
+ const right=`<div class="top-right v60-actions">${finish}${start}<button class="light v6-top-save" onclick="UI.saveExit()">Save &amp; Exit</button></div>`;
+ if(S.ui.view==='learnhome')return `<header class="top v60-top"><button class="brand" onclick="UI.view('home')"><span>RISK <em>&amp;</em> REWARD</span><small>V6.0 DEVELOPMENT · LEARN</small></button><nav class="v60-nav"><button class="active">Learning centre</button><button onclick="UI.view('home')">Return to Home</button></nav></header>`;
+ return `<header class="top v60-top"><button class="brand" onclick="UI.view('home')" aria-label="Risk and Reward home"><span>RISK <em>&amp;</em> REWARD</span><small>V6.0 DEVELOPMENT · PART ${PART} · ${tag}</small></button><div class="v60-top-state"><span class="tag">${explore?'BEFORE YEAR 1':S.phase==='lobby'?tag:cycleText()}</span><span class="tag ${S.phase==='trading'?'trade':''}">${S.intro?.pending?'INTRODUCTION':phaseName()}</span><span class="timer tag ${S.phase==='trading'?'v6-timer':''}" id="clock">${timer}</span></div>${nav}${right}</header>`};
+const v6PriorPhase=phaseBanner;
+phaseBanner=function(){if(S.phase==='trading')return ''; // Timer and Finish Trading are already fixed in the header.
+ if(S.phase==='explore')return '<div class="banner explore-banner" style="background:#dceefa;color:#153958;border:2px solid #7dbedf"><b>Explore Mode · No timer:</b> Browse Banking and Funds & Bonds. You cannot spend money until you select Start Year 1.</div>';
+ if(S.phase==='review'){const y=yearsNow(S),checkpoint=cycleNow(S)===3&&[2,5,10].includes(y),done=v55ReviewValid(S);if(checkpoint)return `<div class="banner blue" style="border:2px solid #f5c44e;background:#3a3a37"><span><b>Year ${y} checkpoint:</b> ${done?'Reflections submitted. Review your results and worksheet.':'Complete your two reflections using evidence from Performance.'}</span><button class="btn v6-yellow" onclick="UI.toReflection()">${done?'View Year '+y+' review':'Go to reflection'}</button></div>`;
+ return `<div class="banner blue"><span>Review your cycle results before continuing.</span><button class="btn v6-yellow" onclick="UI.showResults()">View results</button></div>`}
+ if(S.phase==='ended')return '<div class="banner blue"><span>Campaign complete. Open Performance to review your worksheet and finish saving.</span><button class="btn v6-yellow" onclick="UI.studentTab(\'performance\')">View final results</button></div>';
+ return v6PriorPhase()};
+
+function v6Concentration(t){const total=holdingsValue(S,t),holdings=Object.entries(t.hold).map(([id,h])=>({id,v:h.qty*assetPrice(S,id)})).sort((a,b)=>b.v-a.v),big=holdings[0],share=total?100*(big.v/total):0;return {total,holdings,big,share}};
+function v6RiskObservation(t){const x=v6Concentration(t),total=totalNet(S,t),cash=t.cash;if(x.total>0&&x.share>=75)return `${Math.round(x.share)}% of your investment money is in ${AS(x.big.id).short}. If it falls by 20%, the invested portfolio could lose about ${Math.round(x.share*.20)}%, with other prices unchanged.`;
+ if(x.total>0&&x.share>=50)return `${Math.round(x.share)}% of your investment money is in ${AS(x.big.id).short}. Have you considered the potential loss from one company's bad news?`;
+ if(x.holdings.length>=3)return `You hold ${x.holdings.length} different investments. Diversification spreads some risks, but the wider market can still fall.`;
+ if(cash>total*.75)return 'Much of your money remains in cash. It is accessible, but could miss potential investment income or growth.';
+ if(t.sav>0||t.term.length)return 'Your savings or fixed deposits earn interest. Consider their income alongside the price risk of your investments.';
+ return 'What might cause your investments to rise or fall after the latest economic news?';}
+const v6OldMaybeOverlay=maybeOverlay;
+maybeOverlay=function(){v6OldMaybeOverlay();if(S.phase==='trading'&&S.ui.v6ConfirmFinish&&S.ui.view==='student'){
+ const t=findTeam(),x=v6Concentration(t),balance=totalNet(S,t);
+ $('#modal').innerHTML=`<div class="shade" role="dialog" aria-modal="true" aria-labelledby="v6-confirm-title"><div class="dialog v6-confirm-dialog"><div class="dialog-meta">TRADING CHECK · YEAR ${yearsNow(S)} CYCLE ${cycleNow(S)}</div><h2 id="v6-confirm-title">Ready to finish trading?</h2><p>Prices will settle and you cannot trade again until the next cycle. The countdown continues while this window is open.</p><div class="v6-confirm-values"><div><small>Available cash</small><strong>${fm(t.cash)}</strong></div><div><small>Money invested</small><strong>${fm(x.total)}</strong></div></div><div class="v6-confirm-warning"><b>Something to consider</b><p style="margin:5px 0 0">${escapeHtml(v6RiskObservation(t))}</p></div><div class="v6-confirm-actions"><button class="btn v6-yellow" onclick="UI.v6ConfirmFinish()">Finish &amp; See Results</button><button class="btn subtle" onclick="UI.v6CancelFinish()">Keep Trading</button></div></div></div>`;
+ }};
+UI.finishTrading=function(){if(S.phase!=='trading')return;const elapsed=Date.now()-(S.tradeStartedAt||Date.now());if(elapsed<MIN_TRADE_MS){toast('Review the market briefly before finishing.',true);return;}S.ui.v6ConfirmFinish=true;render()};
+UI.v6CancelFinish=function(){S.ui.v6ConfirmFinish=false;render()};
+UI.v6ConfirmFinish=function(){S.ui.v6ConfirmFinish=false;if(S.phase!=='trading'){render();return;}respond(closeAndSettle(S))};
+const v6OldDraw=draw;
+draw=function(){if(S.ui.view==='student'&&S.ui.v6ViewCycle!==S.cycle){S.ui.v6ViewCycle=S.cycle;S.ui.v60PriceRange='year'}v6OldDraw();};
+
+// Explain results with accurately labelled holding-level movements and market factors.
+resultsOverlay=function(t){const l=t.last;if(!l)return '';const yr=l.year,annual=!!l.yearEnd,checkpoint=annual&&V54_Q[yr],wait=Math.max(0,Math.ceil((REVIEW_DELAY_MS-(Date.now()-(S.reviewStartedAt||Date.now())))/1000));
+ const rows=l.assetMoves||[],valueAtTrade=rows.reduce((sum,m)=>sum+m.qty*(m.trading||m.closing),0),dollars=rows.reduce((sum,m)=>sum+m.qty*(m.closing-(m.trading||m.closing)),0),pct=valueAtTrade?100*dollars/valueAtTrade:0;
+ const detail=rows.map(m=>{const a=AS(m.id),base=m.trading||m.closing,p=base?100*(m.closing/base-1):0;return `<tr><td>${escapeHtml(a.short)}</td><td class="r">${m.qty}</td><td class="r">${pPercent(p)}</td><td class="r">${pNum(m.qty*(m.closing-base))}</td></tr>`}).join('');
+ const biggest=rows.slice().sort((a,b)=>(b.qty*b.trading)-(a.qty*a.trading))[0],fx=biggest?S.v6Factors?.[S.cycle]?.[biggest.id]:null,a=biggest?AS(biggest.id):null;
+ const explain=fx&&a?`For <b>${escapeHtml(a.short)}</b>, this news provided a ${fx.news>=0?'potentially positive':'potentially negative'} price influence (${fmtPct(fx.news)} over the full cycle). Other simulated market movements were ${fmtPct(fx.random)} in the settlement calculation. Neither guaranteed the actual result.`:'News and normal market fluctuations can move prices. Savings, wages and super also affect net worth.';
+ return `<div class="shade" role="dialog" aria-modal="true" aria-labelledby="result-title"><div class="dialog review-dialog v6-review-dialog ${annual?'annual':''}"><div class="dialog-meta">YEAR ${yr} · CYCLE ${l.cycle}</div>${annual?`<div class="v6-annual-flag">YEAR ${yr} COMPLETE · Review your Performance and worksheet figures</div>`:''}<h2 id="result-title">What happened to your money?</h2><div class="v59-hero"><div class="v59-value"><small>Net worth now · includes wages and super</small><strong>${fm(l.netWorth)}</strong></div><div class="v59-value"><small>Price change on investments you still hold</small><strong>${pPercent(pct)}</strong></div><div class="v59-value"><small>Change in their value since trading opened</small><strong>${pNum(dollars)}</strong></div></div><p class="v59-hint">The percentage is <b>value-weighted</b> across investments held at settlement, not the simple average of individual percentages. These two price-movement figures exclude assets already sold, wages and investment income.</p><div class="v59-table-scroll"><table class="v59-table"><thead><tr><th>Investment</th><th class="r">Units held</th><th class="r">Price since trading</th><th class="r">Holding value change</th></tr></thead><tbody>${detail||'<tr><td colspan="4">No investments held at settlement. Savings interest or super may still change.</td></tr>'}</tbody></table></div><div class="v6-price-explain"><b>Why might prices have moved?</b><p style="margin:5px 0">${explain}</p></div><p class="small" style="margin:7px 0"><b>Other money:</b> Investment income ${fm(l.incomeAccrued)} · Bank interest ${fm(l.interest)} · Super investment change ${pNum(l.superChange)}</p><details class="v59-details"><summary>More calculations and evidence</summary>${v55Evidence(t)}${v55Suitability(t)}</details>${annual?'<p class="v6-annual-flag">End of year: use Performance to record your net worth, news and decisions.</p>':''}<div class="review-cta">${checkpoint?`<button class="btn v6-next" onclick="UI.toReflection()">Go to Year ${yr} reflection</button>`:`<button class="btn v6-next" id="result-next" ${wait?'disabled':''} onclick="UI.nextCycle()">${wait?'Review results · '+wait+'s':annual?'Continue to Year '+(yr+1):'Continue to next cycle'}</button>`}</div></div></div>`;
+};
+
+// Performance is a worksheet-first screen; reflections are pinned above it when due.
+function v6AnnualCount(){return Math.floor((['review','ended'].includes(S.phase)?S.cycle+1:S.cycle)/3)}
+function v6Sign(n){return `<span class="${n<0?'negative':'positive'}">${pNum(n)}</span>`}
+function v6Worksheet(t){const count=v6AnnualCount(),start=PART===1?1:6,end=PART===1?5:10;const rows=Array.from({length:5},(_,i)=>{const y=start+i,entry=t.history.find(x=>x.cycle===y*3),fallback=t.yearly?.[y],complete=y<=count,number=complete?(entry?.nw??fallback?.netWorth):null,notes=escapeHtml(t.yearNotes?.[y]||'');
+ if(PART===1)return `<tr><td><b>Year ${y}</b></td><td class="r"><b>${Number.isFinite(number)?fm(number):'Not completed'}</b></td><td>${complete?`<input aria-label="Year ${y} key decision or observation" value="${notes}" maxlength="200" placeholder="One important decision or observation" oninput="UI.yearNote(${y},this.value)"/>`:'Not yet'}</td></tr>`;
+ return `<tr><td><b>Year ${y}</b></td><td>${complete?V54_BEATS.slice((y-1)*3,y*3).map(x=>escapeHtml(x[0])).join('<br>'):'Not completed'}</td><td>${complete?`<input aria-label="Year ${y} my response to the news" value="${notes}" maxlength="200" placeholder="What did you do in response?" oninput="UI.yearNote(${y},this.value)"/>`:'Not yet'}</td></tr>`;
+ }).join('');return `<section class="v59-card v59-featured" id="worksheet-c"><h2>COMPLETE YOUR WORKSHEET · Lesson ${PART===1?5:6} Section C1</h2><p>${PART===1?'Record your net worth at the end of each year and one important decision or observation. You can complete this table after Year 5.':'Choose the most important news from each year and describe what you actually did in response. You can complete it after Year 10.'}</p><div class="v59-table-scroll"><table class="v59-table"><thead><tr><th>Year</th><th class="${PART===1?'r':''}">${PART===1?'Net worth at year end':'Economic news summary'}</th><th>${PART===1?'My key decision or observation':'My response'}</th></tr></thead><tbody>${rows}</tbody></table></div></section>`}
+function v6SectionC2(t){if(PART!==2)return'';const f=v54Finance(t),measures=[['Employment wages',fm(f.wages)],['Realised capital gain/loss',pNum(f.real)],['Unrealised capital gain/loss',pNum(f.unreal)],['Dividends and bond coupons',fm(f.investmentIncome)],['Savings and deposit interest',fm(f.bankInterest)],['Employer super contributions',fm(f.superContrib)],['Super investment gain/loss',pNum(f.superEarned)],['Final net worth',fm(f.netWorth)]];return `<section class="v59-card v59-featured" id="worksheet-c2"><h2>COMPLETE YOUR WORKSHEET · Lesson 6 Section C2</h2><p>Copy these figures into your worksheet. Realised and unrealised gains can be combined if the worksheet has one line for capital gain/loss.${S.defaultStart?' These totals cover your fictional Year 6–10 starter portfolio, not your missing Years 1–5 results.':''}</p><div class="v59-table-scroll"><table class="v59-table"><thead><tr><th>Measure</th><th class="r">Value from your game</th></tr></thead><tbody>${measures.map(([name,val])=>`<tr><td>${name}</td><td class="r"><b>${val}</b></td></tr>`).join('')}</tbody></table></div></section>`}
+function v6Wealth(t){const d=t.history.filter(x=>Number.isFinite(x.nw)),values=d.map(x=>x.nw),graph=values.length>1?lineGraph([{label:'Net worth',values,col:'#2DD4BF'}],760,205):'<p>Complete a cycle to see your financial history.</p>',first=PART===1?1:6,blocks=Array.from({length:5},(_,i)=>{const y=first+i,entry=d.find(x=>x.cycle===y*3),fallback=t.yearly?.[y],net=entry?.nw??fallback?.netWorth;return `<div class="v60-year-block ${Number.isFinite(net)?'':'missing'}"><small>Year ${y}</small><strong>${Number.isFinite(net)?fm(net):'Not yet'}</strong></div>`}).join('');return `<section class="v60-wealth v6-wealth-compact"><h2>Net worth over time</h2><p>Includes wages, cash, savings, investments and super. It is <b>not</b> the same as investment profit.</p>${graph}<div class="v60-year-row">${blocks}</div></section>`}
+function v6Checkpoint(t){const y=yearsNow(S),checkpoint=S.phase==='review'&&cycleNow(S)===3&&V54_Q[y];if(!checkpoint)return'';const f=v54Finance(t),done=v55ReviewValid(S),row=t.yearly?.[y];return `<section class="panel v6-checkpoint" id="checkpoint-panel"><div class="dialog-meta">YEAR ${y} CHECKPOINT · REQUIRED</div><h2>Review your evidence and submit both reflections</h2><p>Use these figures and the worksheet table to support your answers.</p><div class="v6-evidence-line"><span>Net worth <b>${fm(f.netWorth)}</b></span><span>Financial gain/loss <b>${pNum(f.financial)}</b></span><span>Investment income <b>${fm(f.investmentIncome)}</b></span></div>${done?`<div class="v6-confirm-warning" style="border-color:#22d3a1;background:#17473e;color:#b7ffe3"><b>Both reflections submitted.</b> ${PART===1&&y===5?'Review your Section C1 records, then save your report.':y===10?'Review Section C1 and C2 and your final results.':'You can now continue to Year '+(y+1)+'.'}</div>`:v54Checkpoint(t,y)}<div class="v6-finish-actions">${done?(PART===1&&y===5?'<button class="btn v6-yellow" onclick="UI.v6FinishPart()">Finish Part 1 &amp; Save Report</button>':`<button class="btn v6-yellow" onclick="UI.nextCycle()">${y===10?'View final game results':'Continue to Year '+(y+1)}</button>`):'<button class="btn subtle" onclick="UI.studentTab(\'invest\')">Review investments first</button>'}</div></section>`}
+function v6AtGlance(t){const f=v54Finance(t),complete=v6AnnualCount(),cur=t.yearly?.[complete],previous=t.yearly?.[complete-1],annual=cur?round(cur.financial-(previous?.financial||0)):null;const cards=[['Net worth now',fm(f.netWorth)],['Financial gain/loss',pNum(f.financial)],['Investment income',fm(f.investmentIncome)],['Capital gain/loss',pNum(round(f.real+f.unreal))]];return `<section class="v6-performance-quick"><h2>Your performance at a glance</h2><p><b>Worksheet first:</b> the Section C tables immediately below contain the figures you need. Financial gain/loss excludes wages and employer super contributions.</p><div class="v6-kpis">${cards.map(([k,v])=>`<div><small>${k}</small><strong>${v}</strong></div>`).join('')}</div><p><b>Wages:</b> ${fm(f.wages)} · <b>Bank interest:</b> ${fm(f.bankInterest)} · <b>Super:</b> ${fm(f.superBalance)}</p>${annual!==null?`<p><b>Year ${complete} financial result:</b> ${pNum(annual)} (not the same as net-worth growth).</p>`:''}${S.phase==='ended'?'<button class="btn v6-yellow" onclick="UI.v6FinishPart()">Finish Game / Save Report</button>':''}</section>`}
+function v6EndSummary(t){if(!(S.phase==='ended'||(PART===1&&v55PartOneFinished(S))))return'';const f=v54Finance(t),c=v6Concentration(t),goal=t.profile?.goal||'medium',risk=t.profile?.risk||'medium';return `<section class="panel v6-finish-screen"><h2>Final review · Part ${PART} complete</h2><p><b>Your goal:</b> ${escapeHtml(goal)} · <b>Risk comfort:</b> ${escapeHtml(risk)} · <b>Financial gain/loss:</b> ${pNum(f.financial)} · <b>Net worth:</b> ${fm(f.netWorth)}</p><p>Your largest holding represents <b>${Math.round(c.share)}%</b> of invested money.${c.share>65?' This is a concentrated portfolio with greater company-specific risk.':''}</p><p>Finish your worksheet sections above, then preview and save your financial report.</p><div class="v6-finish-actions"><button class="btn v6-yellow" onclick="UI.v6FinishPart()">Finish Game / Save Report</button><button class="btn subtle" onclick="UI.export()">Download JSON Game Save</button><button class="btn subtle" onclick="UI.view('home')">Return to Home</button></div></section>`}
+performance=function(t){const chapter=v6Checkpoint(t),f=v54Finance(t);return `<div class="v6-performance"><div class="v6-perf-nav"><h1 style="margin:0;font-size:23px">Performance &amp; Worksheet</h1><button class="btn subtle" onclick="UI.studentTab('invest')">← Return to Trading</button></div>${chapter}${v6AtGlance(t)}${v6Worksheet(t)}${v6SectionC2(t)}${v6EndSummary(t)}${v6Wealth(t)}<section class="panel v6-holdings"><h2>Current holdings: gain or loss?</h2><p class="small muted">These figures show the investments you still own. Previously sold holdings are reflected in realised gains or losses.</p>${holdings(t)}</section><details class="panel calc"><summary>More financial calculations and portfolio composition</summary>${v55Suitability(t)}${allocation(t)}${annualReports(t)}${v54Explain(t)}</details>${v54Reflections(t)}</div>`};
+
+// Native Print / Save as PDF is deliberate: students inspect the report before saving.
+UI.v6FinishPart=function(){if(!reportReady()){toast('Submit all required checkpoint reflections before finishing and exporting.',true);this.studentTab('performance');return;}downloadSave();S.ui.view='home';render();openReportPreview();toast('Your JSON save was downloaded. Review the report, then use Print / Save as PDF.')};
+const v6PreviousHome=home;
+home=function(){let html=v6PreviousHome();const done=(PART===1&&v55PartOneFinished(S))||(PART===2&&S.phase==='ended');const extra=`<section class="v6-home-learn"><h2 style="margin:0 0 7px">After the game</h2><p>Learning challenges and previous investment reports are available from here when this part is complete.</p><div class="review-cta"><button class="btn subtle" ${done?'':'disabled'} onclick="UI.goLearnHome()">Learn · Extra Challenges</button><button class="btn subtle" ${reportReady()?'':'disabled'} onclick="UI.reportPreview()">View Part ${PART} report</button>${PART===1&&done?'<a class="btn v6-yellow" href="part2.html">Continue to Part 2 →</a>':''}</div></section>`;return html+extra};
+const v6PreviousStudent=student;
+student=function(){if(S.ui.view==='learnhome'){return `<main class="page student"><div class="v6-perf-nav"><h1>Learn · Financial Challenges</h1><button class="btn subtle" onclick="UI.view('home')">Return to Home</button></div>${learning(findTeam())}</main>`;}return v6PreviousStudent()};
+UI.goLearnHome=function(){if(!learnUnlocked()){toast('Complete this part first to unlock the learning challenges.',true);return;}S.ui.view='learnhome';S.ui.studentTab='learn';render()};
+// Do not auto-click browser print. Allow the student to confirm its PDF destination.
+const v6OldSaveExit=UI.saveExit;
+UI.saveExit=function(){downloadSave();S.ui.view='home';render();if(reportReady()){openReportPreview();toast('JSON downloaded. Check the report, then select Print / Save as PDF.')}else toast('JSON game save downloaded. Keep it for your next lesson.');};
+const v6PreviousNext=UI.nextCycle;
+UI.nextCycle=function(){const at=S.cycle;v6PreviousNext.call(this);if(S.cycle!==at){S.ui.v60PriceRange='year';S.ui.v6ViewCycle=S.cycle;save()}};
+// Separate the beta browser saves from the earlier V6.0 preview.
 })();
 
 </script></body></html>
