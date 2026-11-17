@@ -752,7 +752,7 @@ assetTile=function(a,t){let html=oldAssetTile(a,t);if(viewable(a)){const info=`<
 tradePanel=function(t){const a=AS(S.ui.selected);let html=oldTradePanel(t);if(!a||!viewable(a))return html;const risk=`<div class="v59-risk-box">${v59SwingTag(a)}<b>Modelled annual return: ${Number((a.mu+a.yield).toFixed(1))}%</b><span class="v59-hint">Price swings describe how much prices may fluctuate. ${a.sig}% volatility is a simulation setting, <b>not</b> the most you could lose. Returns are not guaranteed.</span></div>`;html=html.replace(/(<div class="tp-chart">)/,risk+'$1');const t0=v59Record(t),yr=yearsNow(S);if(S.phase==='trading'&&!t0.buyReasons[yr]){const selector=`<div class="v59-reason"><label for="v59-buy-reason">Before your first purchase this year: Why are you buying?</label><select id="v59-buy-reason"><option value="">Choose your reason...</option>${v59DecisionOptions.map(([v,txt])=>`<option value="${v}">${escapeHtml(txt)}</option>`).join('')}</select><p class="v59-hint">Choose one reason. You only need to answer once per economic year.</p></div>`;html=html.replace(/(<div class="trade-entry">)/,selector+'$1')}return html};
 UI.yearNote=function(y,v){if(y<1||y>10)return;const t=v59Record(findTeam());t.yearNotes[y]=String(v).slice(0,200);save()};
 const originalBuy=UI.buy;
-UI.buy=function(id){const t=v59Record(findTeam()),y=yearsNow(S),required=S.phase==='trading'&&!t.buyReasons[y];const reason=required?$('#v59-buy-reason')?.value:'';if(required&&!reason){toast('Choose a reason for your first investment purchase this year.',true);return;}const prior=t.tradeCount;originalBuy.call(this,id);if(t.tradeCount>prior&&required){t.buyReasons[y]={id,reason};save();render()}};
+UI.buy=function(id){return originalBuy.call(this,id)};
 const priorStart=UI.startGame;
 UI.startGame=function(){const prev=S.phase;priorStart.call(this);if(prev==='lobby'&&S.phase==='explore'){v59Reseed(S);save();render();}};
 const originalReset=UI.reset;
@@ -1172,4 +1172,84 @@ UI.nextCycle=function(){const at=S.cycle;v6PreviousNext.call(this);if(S.cycle!==
 // Separate the beta browser saves from the earlier V6.0 preview.
 })();
 
+</script><script id="v6-ui-refinement">
+(function(){
+'use strict';
+const style=document.createElement('style');
+style.id='v6-classroom-refinement';
+style.textContent="\n/* V6.0 classroom refinement: consistent modals and three equal-purpose panels */\n.v6-home-learn{width:min(760px,calc(100% - 32px));max-width:760px;margin:14px auto 0!important;text-align:left}\n.main-market-layout.v6-three-col{display:grid!important;grid-template-columns:minmax(225px,.8fr) minmax(255px,1fr) minmax(275px,1fr)!important;gap:10px!important;align-items:start}\n.v6-three-col>.market-list,.v6-three-col>.v6-chart-column,.v6-three-col>.trade-panel{min-width:0}\n.v6-three-col .v6-list{grid-template-columns:1fr!important;gap:7px!important}\n.v6-three-col .v6-list .tile-main{padding:9px 10px!important}\n.v6-three-col .v6-list .v6-asset-row{align-items:flex-start;gap:6px}\n.v6-three-col .v6-list .v6-asset-name{font-size:14px;line-height:1.2}\n.v6-three-col .v6-list .v6-asset-sub{font-size:11px;margin-top:3px}\n.v6-three-col .v6-list .v6-asset-financial{min-width:78px;flex:0 0 auto}\n.v6-three-col .v6-list .v6-asset-price{font-size:17px}\n.v6-three-col .v6-list .v6-asset-change{font-size:14px}\n.v6-three-col .v6-list .v6-asset-held{font-size:12px;margin-top:3px}\n.v6-three-col .v6-list .tile-risk{display:inline-flex;align-items:center;width:max-content;max-width:100%;font-size:11px;font-weight:800;line-height:1.15;padding:3px 7px;margin:5px 0 2px;border-radius:12px}\n.v6-chart-column{background:#102744;border:1px solid #396890;border-radius:13px;padding:11px;align-self:start}\n.v6-chart-label{display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap;margin:0 0 9px}\n.v6-chart-label .swing-pill{font-size:13px;padding:6px 9px}\n.v6-chart-label small{color:#bddaf0;font-size:12px}\n.v6-chart-column .v60-chart-panel{margin:0!important;padding:8px!important}\n.v6-chart-column .v60-chart-panel .v60-chart-head h4{font-size:16px!important}\n.v6-chart-column .v60-chart-panel .v60-chart-tabs{margin:8px 0}\n.v6-chart-column .v60-chart-svg{max-height:230px!important}\n.v6-chart-column .v60-chart-foot{display:none}\n.v6-chart-column .v6-chart-note{font-size:12px;margin-top:7px}\n.v6-three-col>.trade-panel.v6-trade-panel{position:static!important;top:auto!important;max-height:none!important;overflow:visible!important;padding:12px!important}\n.v6-three-col>.trade-panel .v6-asset-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}\n.v6-three-col>.trade-panel .tp-head{align-items:flex-start}\n.v6-three-col>.trade-panel .tp-head h3{font-size:16px}\n.v6-three-col>.trade-panel .tp-description{font-size:12px;margin:5px 0}\n.v6-three-col>.trade-panel .inline-controls .btn{flex:1 1 45px;min-width:42px!important}\n.v6-three-col>.trade-panel .inline-controls input{flex:0 1 64px;min-width:55px!important;width:64px!important}\n.v6-three-col>.trade-panel .trade-buttons .btn{min-height:46px;font-size:17px}\n.shade .dialog{background:#162e50!important;border:2px solid #4477a1!important;color:#edf7ff!important;box-shadow:0 20px 70px #0009;border-radius:18px}\n.shade .dialog .dialog-meta{color:#39d6c3!important}\n.shade .dialog h2{color:#edf7ff!important}\n.shade .dialog>p,.shade .dialog .v6-news-lead{color:#d3e4f5!important}\n.shade .dialog .btn.primary,.shade .dialog .v6-next,.shade .dialog .intro-actions .btn.primary{background:#f8bf3f!important;border-color:#ffdc78!important;color:#153250!important;font-weight:850!important}\n.shade .dialog .btn.subtle{background:#21466b;color:#e8f6ff;border:1px solid #5280a9}\n.shade .v60-news-dialog{width:min(830px,100%)!important}\n.shade .v60-news-dialog .v60-news-info{background:#dceef8!important;border:1px solid #a8cde1!important;border-left:5px solid #39c5be!important;color:#153b55!important}\n.shade .v60-news-dialog .v60-news-info h3,.shade .v60-news-dialog .v60-news-info p{color:#183e5c!important}\n.shade .v60-news-dialog .v6-news-question{background:#fdf1d8;color:#20445d;border-color:#efc977}\n.shade .v6-review-dialog{background:#162e50!important;border-color:#4477a1!important}\n.shade .v6-review-dialog .v59-value{background:#102844;border:1px solid #416d93}\n.shade .v6-review-dialog .v59-value small{color:#bcd7ed}\n.shade .v6-review-dialog .v59-table th{background:#204669;color:#e6f4ff}\n.shade .v6-review-dialog .v6-price-explain{background:#dceef8;color:#163e5a;border:1px solid #a8cde1}\n.shade .v6-review-dialog .v6-price-explain p{color:#163e5a}\n.shade .v6-review-dialog .v59-details>summary{background:#21466b;color:#e5f5ff}\n.shade .v6-review-dialog .v59-hint{font-size:12px;line-height:1.4}\n.shade .v6-confirm-dialog{border-color:#4477a1!important}\n.shade .v6-confirm-warning{background:#fdf0d4;color:#674c15;border:1px solid #e7c478;border-left:5px solid #e9ae31}\n.shade .v6-confirm-warning p{color:#674c15}\n.shade .v6-confirm-values>div{background:#dceef8;border-color:#a8cde1}\n.shade .v6-confirm-values small{color:#365e76}.shade .v6-confirm-values strong{color:#123956}\n.v6-cycle-reflection{background:#dceef8;color:#153e59;border:1px solid #93c7de;border-left:5px solid #32c9bc;border-radius:10px;padding:10px 13px;margin:10px 0}\n.v6-cycle-reflection label{display:block;color:#153e59;font-size:14px;font-weight:800;margin:0 0 5px}\n.v6-cycle-reflection select{width:100%;max-width:100%;min-height:41px;background:#f8fcff;border:1px solid #78a8c1;color:#163d5c;font-size:14px}\n.v6-cycle-reflection .v6-reflection-hint{color:#355d78;font-size:12px;margin:5px 0 0}\n@media(max-width:1190px){.main-market-layout.v6-three-col{grid-template-columns:minmax(200px,.8fr) minmax(245px,1fr) minmax(255px,1fr)!important}}\n@media(max-width:950px){.main-market-layout.v6-three-col{grid-template-columns:repeat(2,minmax(0,1fr))!important}.v6-three-col>.market-list{grid-row:1 / span 2}.v6-three-col .v6-list{grid-template-columns:1fr!important}.v6-three-col>.v6-chart-column,.v6-three-col>.trade-panel{grid-column:2}}\n@media(max-width:640px){.main-market-layout.v6-three-col{grid-template-columns:1fr!important}.v6-three-col>.market-list,.v6-three-col>.v6-chart-column,.v6-three-col>.trade-panel{grid-column:1;grid-row:auto}.v6-three-col .v6-list{grid-template-columns:1fr!important}.v6-home-learn{width:calc(100% - 24px)}}\n";
+document.head.appendChild(style);
+
+// Keep the latest V6 logic, but restore an explicit colour-coded risk badge to each asset row.
+const oldAssetTile=assetTile;
+assetTile=function(a,t){
+ let html=oldAssetTile(a,t);
+ if(!viewable(a))return html;
+ const badge='<span class="tile-risk '+riskColour(a.risk)+'">Risk: '+escapeHtml(a.risk)+'</span>';
+ html=html.replace('<span class="v6-asset-sub">',badge+'<span class="v6-asset-sub">');
+ html=html.replace(' · '+escapeHtml(a.risk)+' risk','');
+ return html;
+};
+
+// Put asset list, history chart and trading controls alongside one another.
+const oldInvest=invest;
+invest=function(t){
+ const html=oldInvest(t);
+ if(curGroup()==='banking')return html;
+ const wrap=document.createElement('div');
+ wrap.innerHTML=html;
+ const layout=wrap.querySelector('.main-market-layout');
+ const panel=layout?.querySelector('aside.v6-trade-panel');
+ const chart=panel?.querySelector('.v60-chart-panel');
+ if(!layout||!panel||!chart)return html;
+ const a=AS(S.ui.selected);
+ const level=a.sig<=10?'Very low':a.sig<=20?'Moderate':a.sig<=30?'High':a.sig<=40?'Very high':'Extreme';
+ const cls=level==='Very low'?'swing-vlow':level==='Moderate'?'swing-mod':level==='High'?'swing-high':level==='Very high'?'swing-vhigh':'swing-extreme';
+ const col=document.createElement('section');
+ col.className='v6-chart-column';
+ col.setAttribute('aria-label','Price graph and volatility');
+ col.innerHTML='<div class="v6-chart-label"><span class="swing-pill '+cls+'" title="'+a.sig+'% modelled annual volatility is not a maximum possible loss">Price swings: '+level+'</span><small>Price history and volatility</small></div>';
+ col.appendChild(chart);
+ const metrics=panel.querySelector('.v6-asset-metrics');
+ if(metrics&&metrics.children.length>=3)metrics.lastElementChild.remove();
+ layout.classList.add('v6-three-col');
+ layout.insertBefore(col,panel);
+ return wrap.innerHTML;
+};
+
+// The first-cycle reason is a short review question, not a condition for buying.
+const reasons=[
+ ['growth','I expected an investment to rise in price'],
+ ['income','I wanted to earn interest, coupons or dividends'],
+ ['spread','I wanted to spread investment risk'],
+ ['stability','I preferred lower risk or access to cash'],
+ ['news','The economic news influenced my decision'],
+ ['wait','I decided to keep my cash and wait']
+];
+const previousResults=resultsOverlay;
+resultsOverlay=function(t){
+ let html=previousResults(t);
+ if(PART!==1||S.cycle!==0||!t.last||t.last.year!==1||t.last.cycle!==1)return html;
+ const selected=t.v6FirstCycleReason||'';
+ const options=reasons.map(([value,label])=>'<option value="'+value+'" '+(selected===value?'selected':'')+'>'+label+'</option>').join('');
+ const prompt='<section class="v6-cycle-reflection"><label for="v6-first-reason">Your first decision: what influenced your saving or investing choice?</label><select id="v6-first-reason" onchange="UI.v6FirstCycleReason(this.value)"><option value="">Choose one reason...</option>'+options+'</select><p class="v6-reflection-hint">Think about the choice you made during trading, even if you kept your money in cash.</p></section>';
+ return html.replace('<div class="v59-hero">',prompt+'<div class="v59-hero">');
+};
+UI.v6FirstCycleReason=function(reason){
+ if(!reasons.some(x=>x[0]===reason))return;
+ const t=findTeam();
+ t.v6FirstCycleReason=reason;
+ t.yearNotes=t.yearNotes||{};
+ if(!t.yearNotes[1])t.yearNotes[1]=reasons.find(x=>x[0]===reason)[1];
+ save();
+};
+const nextCycleBeforeReason=UI.nextCycle;
+UI.nextCycle=function(){
+ if(PART===1&&S.phase==='review'&&S.cycle===0&&!findTeam().v6FirstCycleReason){
+   toast('Choose one reason for your first-cycle decision before continuing.',true);
+   return;
+ }
+ return nextCycleBeforeReason.call(this);
+};
+})();
 </script></body></html>
