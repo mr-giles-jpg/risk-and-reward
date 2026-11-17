@@ -1,26 +1,39 @@
-# Risk & Reward V6.0 Preview, Stage 1
+# Risk & Reward V6.0 · Stage 2 development preview
 
-This is a working preview, not the live V5.9 classroom release. It preserves the V5.9 market engine and financial assumptions. Part 1 and Part 2 have separate preview-only localStorage keys to avoid overwriting the live website's progress. Exported JSON files remain compatible with the underlying student-save schema (version 58).
+## Preview and classroom deployment
+- Preview homepage: https://mr-giles-jpg.github.io/risk-and-reward/preview/v6/
+- The root GitHub Pages site retains V5.9: https://mr-giles-jpg.github.io/risk-and-reward/
+- Both preview HTML files run as static local HTML in a permissive browser, or via GitHub Pages.
+- This is a development preview for testing, not a final classroom release.
+- Browser storage key uses `_v60_stage2` so progress does not overwrite the original V5.9 game or the Stage 1 preview. Export JSON for any preview progress worth keeping.
 
-## Changes made
-- New responsive top navigation: Invest, Performance, Learn, Settings next to Save & Exit, no student name/class displayed
-- Distinct, clearly labelled cash, investments, savings/deposits, super and highlighted net worth in the wallet bar; investment count and unrealised P&L shown within Investments
-- Removed duplicate portfolio summary and My holdings dropdown from Invest
-- Investment cards have no miniature sparklines, larger price changes and units held, modelled return and the existing five-level Price Swings label
-- Large percentage-change chart with visible 0% baseline, symmetric labelled vertical axis, all available history versus recent movements; includes a warning about fictional pre-game prices
-- One dynamically updated Order value instead of duplicate buy/sell totals; shortcut buttons labelled Max buy and Sell all
-- Light-blue economic news strip and print-like news reading panel; larger What happened / Why it matters / What to watch headings and text
-- Bigger Finished Trading and reflection navigation actions
-- Net-worth line graph and per-year values visible on the main Performance screen
-- Removed the two specified phrases from the Shares guide and the Commodity glossary pop-up within the Commodities guide
-- Preserved Year 2, 5 and 10 reflections, worksheet evidence tables, no-save Year 6 start, save, import and print/PDF export
+## Interface revisions
+- 40% compact investment list / 60% trading panel with risk, income yield and cycle movement on every unlocked row
+- Buy and Sell buttons above the extended history chart, persistent trading timer and Finish Trading action in the header
+- Custom Finish Trading check with a contextual concentration/diversification/cash observation; no new compulsory question
+- Brighter, shorter investment unlocks, consistent help guides, and side-by-side possible upside / possible downside in the news
+- Visible interest rates for savings, term deposits, bond coupons, ETF dividends and property distributions
+- Amount shortcuts including +$100 and maximum savings/term deposit selections
+- Cycle result explanation with value-weighted percentage movement of currently held investments, dollar change since trading opened, and market/news factors
+- Compact worksheet-first Performance view, end-of-year annual checkpoints at the top, historical net worth, holdings, final summary, and separate Learn view from the in-game home page
+- Student PDF report still requires explicit browser Print / Save as PDF; JSON is downloaded separately, and the report preview opens after Finish Game / Save Report
 
-## Not changed yet
-- Price generation, asset returns, volatility and the current 70% news-before / 30% after-trading split
-- Fixed economic storyline and variable student market seeds
-- No forced NovaTech crash, diversification reward or new investment product
+## Recalibrated market model
+- News effect is applied 30% before trading, 70% during settlement. Economic headlines remain common across students.
+- Event strength increases for important sector and economy shocks, with an 18% absolute limit on an individual asset's direct news contribution per cycle.
+- Random volatility is scaled relative to asset type, preserving different student outcomes and higher company-specific volatility for shares.
+- Tech company's expected price drift adjusted to 7% p.a.; Property Fund modelled price drift 2.5% p.a., distribution yield 4.5% p.a., and interest-rate sensitivity modestly adjusted.
+- Technology competitive pressure and broad downturn effects strengthened without scripting a guaranteed company crash.
+- All investment returns remain uncertain. Income, portfolio concentration and defensive investment features are now shown more clearly.
 
-## Stage 2 planned
-- Test a 30%-before / 70%-after news split alongside stronger important news, risk-dependent residual volatility and price-movement explanations
-- Compare large batches of market seeds for concentration incentives, relative competitiveness of bonds and property, return dispersion and plausibility
-- Publish to the main homepage only after gameplay tests and classroom review
+## Automated verification completed
+- Chromium at 1366×768 and 1024×768: startup, news, trading, first-purchase reasoning, custom finish confirmation, cycle results, Performance and no horizontal overflow
+- A complete Part 1 Year 1–5 and Part 2 Year 6–10 campaign including JSON export and Part 1→Part 2 import
+- PDF preview print for both completed reports
+- Monte Carlo review of 1,000 seeded market paths: no engine exceptions; risk assets retain large possible losses and gains
+- Theoretical buy-and-hold total-return test accounts for income payouts, showing that price-only comparisons are misleading
+
+## Notes
+- Only the published game files are present in the public repository; student names and JSON/PDF responses remain in each student's browser/files, not GitHub
+- A hosting URL does not guarantee the school browser allows downloads or local storage. Test on a student laptop
+- The fictional property and investment pricing parameters are teaching simplifications, not financial forecasts
