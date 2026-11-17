@@ -76,3 +76,5 @@
 @media(max-width:1190px){.v60-wallet:has(.v6-wallet-action){grid-template-columns:repeat(3,minmax(0,1fr))!important}.v6-wallet-action{grid-column:auto}.v6-wallet-action .v6-top-finish{min-height:48px!important}.v60-wallet{padding:5px 10px!important}.v60-wallet .w-item{padding:6px 9px!important}}
 @media(max-width:980px){.savings.v6-banking-both .savings-grid{grid-template-columns:1fr!important}.v6-landing{padding:7px 11px!important}}
 @media(max-width:650px){.v60-wallet:has(.v6-wallet-action){grid-template-columns:repeat(2,minmax(0,1fr))!important}.v6-home-controls .btn{flex:1 1 165px}.savings.v6-banking-both .deposit-choices{grid-template-columns:1fr}}
+/* Remove unused bottom padding that produced a scrollbar at 1366 × 768. */
+.v60-student{padding-bottom:10px!important}
