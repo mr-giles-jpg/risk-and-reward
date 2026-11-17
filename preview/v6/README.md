@@ -1,4 +1,4 @@
-# Risk & Reward V6.0 · Stage 2 development preview
+# Risk & Reward V6.0 · refined development preview
 
 ## Preview and classroom deployment
 - Preview homepage: https://mr-giles-jpg.github.io/risk-and-reward/preview/v6/
@@ -6,6 +6,15 @@
 - Both preview HTML files run as static local HTML in a permissive browser, or via GitHub Pages.
 - This is a development preview for testing, not a final classroom release.
 - Browser storage key uses `_v60_stage2` so progress does not overwrite the original V5.9 game or the Stage 1 preview. Export JSON for any preview progress worth keeping.
+
+## 17 November 2026 interface refinement
+- Three-column investment layout on desktop: narrower asset selection, price graph with price-swings label, and separate trading controls
+- Restored coloured risk labels on investment list rows
+- Consistent dark-navy, teal, amber and pastel pop-up styling based on the original welcome introduction, including news, cycle review and Finish Trading confirmation
+- First-cycle decision reasoning moved from before buying to the top of the Year 1 Cycle 1 review. Students can trade without answering it first, and then record a reason for the worksheet
+- "After the game" section constrained to the width of the other home content
+- Purchase/sale, return and volatility simulation code unchanged
+- Static checks: all five inline JavaScript blocks in both Part 1 and Part 2 pass syntax parsing. Visual browser regression testing is still recommended before replacing V5.9
 
 ## Interface revisions
 - 40% compact investment list / 60% trading panel with risk, income yield and cycle movement on every unlocked row
