@@ -104,6 +104,9 @@ UI.adjustQty=function(delta){
 
 // Translate any company-specific news into broader sector descriptions.
 function sectorNews(text){return String(text||'')
+ .replace(/NovaTech draws interest/gi,'Technology firms attract interest')
+ .replace(/Outback Minerals reports/gi,'mining companies report')
+ .replace(/The Global Horizons ETF provides/gi,'International investment funds provide')
  .replace(/the Global Horizons ETF/gi,'international investment funds')
  .replace(/Global Horizons ETF/gi,'international investment funds')
  .replace(/NovaTech(?: Systems)?/gi,'technology businesses')
