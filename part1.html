@@ -156,7 +156,7 @@ table{width:100%;border-collapse:collapse;font-size:.88rem}th{font-size:.72rem;l
 'use strict';
 /* RISK & REWARD V5: all prices and events are fictional teaching simulations */
 const GAME_VERSION=58, PART=1, STORE='riskreward_student_p'+PART+'_v60_stage2', PRIOR_STORE='riskreward_student_p'+PART+'_v60_stage2_previous';
-const READ_DELAY_MS=8000, REVIEW_DELAY_MS=6000, MIN_TRADE_MS=5000;
+const READ_DELAY_MS=8000, REVIEW_DELAY_MS=12000, MIN_TRADE_MS=5000;
 const CY=3, YEAR_COUNT=10, TOTAL_CYCLES=30;
 const F=['market','tech','mining','energy','rates','trade','consumer','property','safety','copper'];
 const A=[
@@ -417,7 +417,7 @@ function validateStudentSave(p){
 }
 function importSave(file){if(!file)return;const reader=new FileReader();reader.onload=()=>{try{
  const p=JSON.parse(reader.result),st=validateStudentSave(p);
- if(!confirm('Load this saved game? It will replace the progress currently stored in this browser.'))return;
+ if(window.__rrApprovedFile!==file){UI.classroomConfirm('Load saved game?','This will replace the progress stored in this browser. Download a backup first if you need it.',()=>{window.__rrApprovedFile=file;importSave(file)});return;}window.__rrApprovedFile=null;
  S=migrateUI(st);S.version=GAME_VERSION;S.part=PART;S.botsEnabled=false;S.showLeaderboard=false;S.ui.view='home';S.ui.studentTab='invest';S.ui.newsReopen=false;S.ui.introOpen=null;S.ui.challengeOpen=false;S.clock.startedAt=null;S.paused=false;
  if(PART===2&&p.part===1){S.fromPart1=true;S.stopAfter=10;S.ui.resultSeen={[S.teams[0].id+':14']:true};}
  if(S.phase==='trading'){S.clock.startedAt=null;S.clock.remaining=tradingSeconds(S)*1000;S.paused=false;}
@@ -425,8 +425,7 @@ function importSave(file){if(!file)return;const reader=new FileReader();reader.o
  if(S.phase==='review')S.reviewStartedAt=Date.now();
  render();toast('Saved game loaded.');
  }catch(e){toast('Cannot load this save: '+e.message,true);}finally{const el=document.getElementById('import-file');if(el)el.value='';}};reader.readAsText(file)}
-function newSession(){closeReportPreview();if(!confirm('Restart this part? Your current browser progress will be replaced. Export a backup first if you need it.'))return;
- if(!confirm('Confirm restart. This cannot be undone unless you have a downloaded save.'))return;
+function newSession(){closeReportPreview();if(!window.__rrRestartConfirmed){UI.classroomConfirm('Restart this part?', 'This erases the progress in this browser for this part. Download a save first if you want to keep it.',()=>{window.__rrRestartConfirmed=true;newSession()},'Restart');return;}window.__rrRestartConfirmed=false;
  S=newGame({seed:2026,names:[['Student','']],botsEnabled:false});S.ui.view='home';render();}
 function roleHeader(){const label=PART===1?'PART 1 · YEARS 1–5':'PART 2 · YEARS 6–10';const exploring=S.phase==='explore';const timer=S.phase==='trading'?timeFormat(timeLeft(S)):exploring?'NO TIMER':'AT YOUR PACE';return`<header class="top"><button class="brand" onclick="UI.view('home')"><span>RISK <em>&amp;</em> REWARD</span><small>STUDENT EDITION · V5.8 · ${label}</small></button><div class="top-tags"><span class="tag">${exploring?'BEFORE YEAR 1':S.phase==='lobby'?label:cycleText()}</span><span class="tag ${S.phase==='trading'?'trade':''}">${S.intro?.pending?'INTRODUCTION':phaseName()}</span><span class="timer tag" id="clock">${timer}</span></div><div class="top-right">${exploring?'<button class="btn explore-start" onclick="UI.startYear1()">▶ Start Year 1</button>':''}<button class="light" onclick="UI.saveExit()">Save &amp; Exit</button></div></header>`}
 function home(){const loaded=PART===2&&S.fromPart1,ongoing=S.phase!=='lobby',t=findTeam();return `<section class="welcome"><p class="eyebrow">YEAR 9 ECONOMICS · PART ${PART}</p><h1>RISK <span>&amp;</span> REWARD</h1><h2>${PART===1?'Part 1: Build your strategy (Years 1–5)':'Part 2: Test your strategy (Years 6–10)'}</h2><p>${PART===1?'Learn about saving, bonds, Australian shares, international investments and property across five economic years. Complete your Year 5 reflection and download your save to continue in Part 2.':'Load your completed Part 1 file to continue your portfolio through economic shocks, commodities and a market downturn. You cannot start Part 2 without the Year 5 checkpoint.'}</p>
@@ -640,7 +639,7 @@ function draw(){hideGloss(true);const keep={};['bank-amount','term-amount'].forE
 function render(){const top=!!S.ui.needsCheckpointTop;S.ui.needsCheckpointTop=false;save();draw();if(top)window.scrollTo(0,0)}
 function updateClock(){const e=$('#clock');if(e)e.textContent=S.phase==='trading'?timeFormat(timeLeft(S)):S.phase==='news'?'READ NEWS':S.phase==='review'?'REVIEW':S.phase==='explore'?'NO TIMER':'AT YOUR PACE'}
 function calculateLab(){const el=$('#lab-output');if(!el)return;const amount=Math.max(0,inputValue('#lab-amount')),rate=inputValue('#lab-rate')/100,years=Math.max(1,Math.min(30,inputValue('#lab-years')));const simple=amount*(1+rate*years),compound=amount*(1+rate)**years;el.innerHTML=`<div class="lab-results">${tile('Simple interest total',fm(simple),'Initial amount + interest')}${tile('Compound interest total',fm(compound),'Interest on interest')}${tile('Compounding difference',fm(compound-simple),'Over '+years+' years')}</div>`}
-function confirmAction(m,fn){if(confirm(m))fn()}
+function confirmAction(m,fn){UI.classroomConfirm('Confirm action',m,fn)}
 const guardAt={};function gate(k){const n=Date.now();if(guardAt[k]&&n-guardAt[k]<600){toast('Duplicate click ignored: that exact transaction was just submitted.');return false}guardAt[k]=n;return true}
 function gateClear(k){delete guardAt[k]}
 
@@ -689,7 +688,7 @@ const UI={
  superPlan(){respond(assignSuper(S,findTeam(),$('#super-plan').value))},lab(){calculateLab()},
  startGame(){if(PART!==1||S.phase!=='lobby')return;const n=($('#player-name')?.value||'').trim().slice(0,48),klass=($('#player-class')?.value||'').trim().slice(0,36);if(n.length<2||klass.length<2){toast('Enter your name and class before exploring.',true);return;}findTeam().name=n;findTeam().schoolClass=klass;findTeam().profile={goal:$('#player-goal')?.value||'medium',risk:$('#player-risk')?.value||'medium'};S.phase='explore';S.ui.view='student';S.ui.studentTab='invest';S.ui.group='banking';S.ui.selected=null;S.ui.exploreSeen={};render();toast('Explore the game at your own pace. No transactions are possible yet.');},
  exploreJump(step){if(S.phase!=='explore')return;S.ui.exploreSeen=S.ui.exploreSeen||{};S.ui.exploreSeen[step]=true;S.ui.view='student';S.ui.studentTab='invest';if(step==='banking')S.ui.group='banking';if(step==='funds'||step==='trading'){S.ui.group='funds';S.ui.selected='BOND'}render();if(step==='cash'){toast('Available cash is the money you can invest or deposit. Net worth also includes other assets.');}if(step==='banking')toast('Inspect savings and term deposits. Actions are disabled until Year 1 starts.');if(step==='funds')toast('Compare bonds with the Australian ETF, including prices, risk and income.');if(step==='trading')toast('This panel previews a purchase. Buy and Sell activate after Year 1 begins.');if(step==='trading'&&window.innerWidth<=900){document.getElementById('trade-panel')?.scrollIntoView({block:'nearest',behavior:'smooth'});}},
- startYear1(){if(PART!==1||S.phase!=='explore')return;if(!confirm('Start Year 1? The Explore Mode will end and the economic simulation will begin.'))return;S.phase='lobby';S.ui.view='student';S.ui.group='banking';respond(beginCycle(S));},
+ startYear1(){if(PART!==1||S.phase!=='explore')return;if(!window.__rrStartConfirmed){UI.classroomConfirm('Start Year 1?', 'Explore Mode will end and the economic simulation will begin.',()=>{window.__rrStartConfirmed=true;UI.startYear1()},'Start Year 1');return;}window.__rrStartConfirmed=false;S.phase='lobby';S.ui.view='student';S.ui.group='banking';respond(beginCycle(S));},
  startPart2(){if(PART!==2||!S.fromPart1){toast('Load your completed Part 1 save first.',true);return;}S.ui.view='student';if(S.phase==='review'&&S.cycle===14){const r=completeReview(S);if(!r.ok){respond(r);return}}render()},
   updateIdentity(){const n=($('#settings-name')?.value||'').trim().slice(0,48),klass=($('#settings-class')?.value||'').trim().slice(0,36);if(n.length<2||klass.length<2){toast('Enter both your name and class.',true);return;}findTeam().name=n;findTeam().schoolClass=klass;render();toast('Name and class saved.');},
   reportPreview(){openReportPreview()},reportClose(){closeReportPreview()},reportPrint(){printInvestmentReport()},
@@ -697,7 +696,7 @@ const UI={
  saveExit(){downloadSave();S.ui.view='home';render()},reset(){newSession()},
  dismissNews(){if(S.phase!=='news'){S.ui.newsReopen=false;render();return;}const elapsed=Date.now()-(S.readStartedAt||Date.now());if(elapsed<READ_DELAY_MS){toast('Take a moment to read the news first.',true);return;}S.ui.newsSeen[`${findTeam().id}:${S.cycle}`]=true;S.ui.newsReopen=false;S.newsHold=false;const r=openTrading(S);respond(r)},
  reopenNews(){if(!S.beat||['lobby','ended'].includes(S.phase))return;S.ui.newsReopen=true;render()},
- finishTrading(){if(S.phase!=='trading')return;const elapsed=Date.now()-(S.tradeStartedAt||Date.now());if(elapsed<MIN_TRADE_MS){toast('Please review the market briefly before finishing.',true);return;}if(!confirm('Finish trading? Prices will settle and you will not be able to make more trades this cycle.'))return;respond(closeAndSettle(S))},
+ finishTrading(){if(S.phase!=='trading')return;const elapsed=Date.now()-(S.tradeStartedAt||Date.now());if(elapsed<MIN_TRADE_MS){toast('Please review the market briefly before finishing.',true);return;}UI.classroomConfirm('Finish trading?', 'Prices will settle and trading will close for this cycle.',()=>respond(closeAndSettle(S)));return;},
  showResults(){if(S.phase!=='review')return;S.ui.resultSeen[`${findTeam().id}:${S.cycle}`]=false;render()},
  nextCycle(){if(S.phase!=='review')return;const elapsed=Date.now()-(S.reviewStartedAt||Date.now());if(elapsed<REVIEW_DELAY_MS&&!(cycleNow(S)===3&&V54_Q[yearsNow(S)]&&v55ReviewValid(S))){toast('Take a moment to review your results.',true);return;}if(!v55ReviewValid(S)){toast('Submit both reflections before continuing.',true);this.showResults();return;}if(PART===1&&S.cycle>=14){toast('Part 1 is finished. Download your save for Part 2.',true);return;}const r=completeReview(S);if(r.ok){S.ui.studentTab=r&&S.phase==='ended'?'performance':'invest'}respond(r)},
  saveCheckpoint(y){if(S.phase!=='review'||cycleNow(S)!==3||yearsNow(S)!==y||![2,5,10].includes(y))return;const q=V54_Q[y],vals=q.map((_,i)=>document.getElementById(`checkpoint-${i}`)?.value.trim()||'');if(vals.some(x=>x.length<18||x.split(/\s+/).length<4)){toast('Write at least a short explanation (four words and 18 characters) for each question.',true);return;}const t=findTeam();t.reflections=t.reflections||{};t.reflections[y]=vals;S.ui.studentTab='performance';S.ui.resultSeen[`${t.id}:${S.cycle}`]=true;render();toast('Both reflections submitted. '+(PART===1&&y===5?'Part 1 complete. Save your file.':'Continue when ready.'))},
@@ -757,7 +756,7 @@ const priorStart=UI.startGame;
 UI.startGame=function(){const prev=S.phase;priorStart.call(this);if(prev==='lobby'&&S.phase==='explore'){v59Reseed(S);save();render();}};
 const originalReset=UI.reset;
 UI.reset=function(){originalReset.call(this)};
-function v59DefaultStart(){if(PART!==2||S.fromPart1)return;const name=($('#v59-name')?.value||'').trim().slice(0,48),klass=($('#v59-class')?.value||'').trim().slice(0,36);if(name.length<2||klass.length<2){toast('Enter your name and class to start Year 6.',true);return}if(!confirm('Start at Year 6 with a standard fictional portfolio? Your own Years 1–5 results will NOT be restored.'))return;
+function v59DefaultStart(){if(PART!==2||S.fromPart1)return;const name=($('#v59-name')?.value||'').trim().slice(0,48),klass=($('#v59-class')?.value||'').trim().slice(0,36);if(name.length<2||klass.length<2){toast('Enter your name and class to start Year 6.',true);return}if(!window.__rrYearSixConfirmed){UI.classroomConfirm('Start at Year 6?', 'This uses a fictional starter portfolio. Your previous Years 1–5 decisions and results will not be restored.',()=>{window.__rrYearSixConfirmed=true;UI.defaultStart()},'Start Year 6');return;}window.__rrYearSixConfirmed=false;
  S=newGame({seed:v59Seed(),names:[[name,'']],botsEnabled:false});S.part=2;S.version=58;S.fromPart1=true;S.defaultStart=true;S.stopAfter=10;S.ui.view='student';S.ui.studentTab='invest';S.ui.group='funds';S.teams[0].schoolClass=klass;S.teams[0].profile={goal:$('#v59-goal')?.value||'medium',risk:$('#v59-risk')?.value||'medium'};
  // Reconstruct shared Year 1–5 public market evolution, but no fictional student activity.
  for(let c=0;c<15;c++){S.cycle=c;const news=v54News(S);priceForNews(S,news);priceForClose(S,news);nextRate(S,news)}
@@ -1254,4 +1253,4 @@ UI.nextCycle=function(){
  return nextCycleBeforeReason.call(this);
 };
 })();
-</script></body></html>
+</script><link rel="stylesheet" href="v6-classroom-enhancements.css"><script src="v6-classroom-enhancements.js"></script></body></html>

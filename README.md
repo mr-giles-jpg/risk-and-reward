@@ -28,3 +28,16 @@ https://mr-giles-jpg.github.io/risk-and-reward/
 - Original V6 Stage 2 market model retained
 
 The public GitHub repository contains the HTML game and its fictional market model, not student submissions.
+
+
+## Classroom refinements, 17 November 2026
+- Economic news is phrased by industry, with uncertainty and potential outcomes; settlement reviews describe news effects versus market movements
+- Review pop-ups have colour-coded asset dots, simplified explanations and prominent income/interest/super metrics
+- Year-end review wording and timing refined (12-second minimum review)
+- New asset introductions have a 7-second read period
+- Trading countdown extended to 4 minutes for the first cycle and 3 minutes for subsequent cycles; students can finish earlier
+- Portfolio performance shows starting net worth and every completed cycle, with start/end values for each year
+- Banking uses compact Savings / Fixed-term deposit tabs; trading has dedicated plus and minus unit buttons
+- Native JavaScript confirmation dialogs replaced with in-game dialogs
+- Home-page colours match the self-contained edition, with Main menu links and restart controls inside each game
+- The financial engine and save format are otherwise unchanged

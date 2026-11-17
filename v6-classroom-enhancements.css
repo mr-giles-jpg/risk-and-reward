@@ -1,0 +1,49 @@
+/* V6 classroom usability update, 17 November 2026 */
+.v6-review-dialog .v6-annual-flag{color:#142c44!important}
+.v6-review-dialog .v6-annual-flag *{color:#142c44!important}
+.v6-review-dialog .v59-hint{display:none}
+.v6-review-dialog .v6-review-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0}
+.v6-review-kpis>div{border:1px solid #50769c;border-radius:10px;padding:12px;background:#193f60}
+.v6-review-kpis small{font-size:12px;line-height:1.35;color:#cbe0f2;display:block}
+.v6-review-kpis strong{font-size:clamp(16px,2vw,23px);color:#fff;display:block;margin-top:5px}
+.v6-review-dialog .v6-price-explain{background:#dceef8!important;color:#123d5b!important;border-left:5px solid #39c8bb;border-radius:9px}
+.v6-review-dialog .v6-price-explain p{color:#123d5b!important}
+.v6-review-dialog .v6-price-explain b{color:#103b59!important}
+.v6-review-dialog .v59-table td:first-child{white-space:normal}
+.v6-review-dialog .v6-asset-dot{width:11px;height:11px;border-radius:50%;display:inline-block;vertical-align:middle;margin-right:8px;box-shadow:0 0 0 1px #fff3}
+.v6-review-dialog .v6-cycle-note{font-size:12px;color:#c3d9ee;margin:8px 0}
+.v6-next:disabled,.v6-intro button:disabled{opacity:.57;cursor:not-allowed}
+.v6-main-menu{display:inline-flex;align-items:center;min-height:36px;padding:7px 11px;border-radius:8px;background:#183858;border:1px solid #6286ac;color:#eaf7ff;text-decoration:none;font-size:13px;font-weight:800;white-space:nowrap}
+.v6-main-menu:hover{background:#245177}
+.v6-home-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px auto 0;max-width:760px;justify-content:center}
+.v6-home-actions .btn,.v6-home-actions a{min-height:44px;font-size:14px}
+.v6-restart{background:#582936!important;border-color:#ac6672!important;color:#ffe9e7!important}
+.v6-custom-confirm{width:min(560px,100%)!important}
+.v6-custom-confirm p{font-size:16px;line-height:1.55;color:#d5e6f5!important}
+.v6-custom-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.v6-custom-actions button{min-height:46px;font-weight:800}
+.v6-custom-actions button.primary{background:#f8bf3f!important;color:#18354d!important}
+.v6-bank-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 13px}
+.v6-bank-tabs button{text-align:left;white-space:normal;padding:12px;border-radius:10px;background:#13314e;color:#daeaf8;border:1px solid #49708e;font-size:15px;font-weight:800;min-height:64px}
+.v6-bank-tabs button[aria-selected=true]{background:#234b64;border:2px solid #2dd4bf;color:#fff}
+.v6-bank-tabs small{display:block;font-size:12px;color:#bbd5eb;line-height:1.4;margin-top:3px;font-weight:500}
+.savings.v6-banking-compact .savings-grid{display:block;max-width:100%;margin:0}
+.savings.v6-banking-compact .savings-grid>div{border:0;padding:0!important}
+.savings.v6-banking-compact .savings-grid>div.v6-bank-hidden{display:none!important}
+.savings.v6-banking-compact .savings-grid .bank-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.savings.v6-banking-compact .v6-bank-extras{margin:6px 0}
+.savings.v6-banking-compact .deposit-option{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0!important}
+.savings.v6-banking-compact .deposit-option>div{min-width:0;flex:1}
+.savings.v6-banking-compact .subheading{margin:0 0 5px;font-size:17px}
+.savings.v6-banking-compact .section-head{margin-bottom:5px}
+.v6-qty-step{display:inline-flex;align-items:center;justify-content:center;width:43px;min-width:43px!important;min-height:42px;font-size:23px!important;font-weight:900;color:#fff;background:#254e77;border:1px solid #78b6dc;border-radius:8px;padding:3px!important}
+.v6-qty-step:hover:not(:disabled){background:#346b99}
+#qty::-webkit-inner-spin-button,#qty::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+#qty{-moz-appearance:textfield;appearance:textfield}
+.v6-wealth-compact .v6-history-summary{background:#dceefa;color:#153b56;border-radius:9px;padding:10px 12px;margin:10px 0}
+.v6-wealth-compact .v6-history-summary strong{color:#10344d}
+.v6-wealth-compact .v6-year-start{font-size:12px;color:#b8d9ee;display:block;margin:6px 0 0}
+.v6-wealth-compact .v60-year-block strong{font-size:15px}
+.v6-wealth-compact .v6-chart-context{color:#cee1f2;font-size:12px;line-height:1.45;margin:6px 0 8px}
+.v6-wealth-compact .line-graph{max-height:230px}
+@media(max-width:760px){.v6-review-dialog .v6-review-kpis{grid-template-columns:1fr}.v6-bank-tabs{grid-template-columns:1fr}.v6-home-actions{justify-content:flex-start}.v6-custom-actions{justify-content:stretch}.v6-custom-actions button{flex:1}.v6-main-menu{padding:6px}}
