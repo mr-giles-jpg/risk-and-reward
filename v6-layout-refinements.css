@@ -1,0 +1,78 @@
+/* Risk & Reward V6.0: concise classroom UI. Financial calculations unchanged. */
+.v6-landing{max-width:950px!important;margin:12px auto 0!important;padding:7px 16px 16px!important;text-align:left!important}
+.v6-landing>h1{text-align:center!important;font-size:clamp(32px,4.5vw,54px)!important;margin:0 0 3px!important;line-height:1.1}
+.v6-landing-part{text-align:center!important;font-size:15px!important;color:#43d9c9!important;letter-spacing:.11em;font-weight:850!important;margin:0 0 12px!important}
+.v6-landing .start-panel{width:100%;max-width:none!important;text-align:left!important;margin:0!important;padding:16px 20px!important;border:1px solid #446989!important;background:#142f4f!important}
+.v6-landing .start-panel>.setting-grid{margin:0!important;gap:8px 14px}
+.v6-landing .start-panel .setting-grid>p{margin:0 0 5px!important;font-size:16px;line-height:1.5}
+.v6-landing .start-panel .setting-grid label{margin:0;min-width:185px;flex:1 1 185px}
+.v6-landing .start-panel input,.v6-landing .start-panel select{min-height:39px;padding:7px 9px}
+.v6-home-controls{display:flex!important;gap:8px!important;margin:12px 0 0!important;align-items:center!important;flex-wrap:wrap!important;justify-content:flex-start!important}
+.v6-home-controls .btn,.v6-home-controls a{min-height:41px!important;white-space:normal!important;font-size:14px!important;padding:8px 12px!important}
+.v6-home-controls .v6-home-primary{background:#f7be40!important;border-color:#ffd779!important;color:#0f2b46!important;font-weight:850!important}
+.v6-landing-after{width:100%!important;max-width:none!important;margin:10px 0 0!important;padding:12px 16px!important;background:#173851!important;border:1px solid #447da2!important;border-radius:12px!important}
+.v6-landing-after h2{font-size:18px!important;margin:0 0 3px!important}
+.v6-landing-after p{font-size:13px!important;margin:3px 0 7px!important;color:#cee4f6!important;line-height:1.4!important}
+.v6-landing-after .review-cta{margin:5px 0 0!important;gap:7px}
+.v6-landing-after .btn{font-size:13px;min-height:38px;padding:7px 11px}
+.v6-landing .v59-start-form{margin:8px 0 0!important;padding:10px!important}
+.v6-landing .v59-start-form p{font-size:13px!important;line-height:1.4!important}
+.v6-landing .v59-start-form h2{font-size:18px!important}
+.v6-landing .v59-start-form .setting-grid{gap:7px!important}
+/* Action button sits beside the net-worth card, below the Save & Exit button. */
+.v60-wallet:has(.v6-wallet-action){grid-template-columns:repeat(5,minmax(0,1fr)) minmax(145px,.82fr)!important;gap:7px!important}
+.v6-wallet-action{min-width:0;display:flex;align-items:stretch}
+.v6-wallet-action .v6-top-finish{width:100%;height:100%;min-height:60px!important;white-space:normal!important;font-size:16px!important;font-weight:900;background:#f6bd42!important;border:1px solid #fce09a!important;color:#153149!important;border-radius:10px!important;line-height:1.15}
+.v6-wallet-action .v6-top-finish:disabled{opacity:.55}
+/* Savings and fixed deposits appear together. */
+.savings.v6-banking-both{padding:13px!important}
+.savings.v6-banking-both .savings-grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1.07fr)!important;gap:13px!important;align-items:stretch!important}
+.savings.v6-banking-both .savings-grid>div{border:1px solid #426989!important;background:#102b49!important;border-radius:10px!important;padding:12px 14px!important;min-width:0}
+.savings.v6-banking-both .savings-grid .v6-bank-hidden{display:block!important}
+.savings.v6-banking-both .subheading{font-size:18px!important;color:#eff9ff;margin:0 0 6px!important}
+.savings.v6-banking-both .savings-grid p{font-size:13px;line-height:1.4}
+.savings.v6-banking-both .bank-actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:7px 0}
+.savings.v6-banking-both .bank-actions button{min-height:40px!important;font-size:14px;white-space:normal!important}
+.savings.v6-banking-both .v6-bank-extras{gap:5px!important;margin:5px 0!important}
+.savings.v6-banking-both .v6-bank-extras button{min-height:35px;padding:5px 9px!important;font-size:12px!important}
+.savings.v6-banking-both input{width:100%!important;max-width:220px!important;min-height:40px!important}
+.savings.v6-banking-both .deposit-choices{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px!important;margin-top:8px!important}
+.savings.v6-banking-both .deposit-option{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;justify-content:space-between!important;padding:10px!important;background:#173d5e;border:1px solid #466f94;border-radius:9px}
+.savings.v6-banking-both .deposit-option>div{min-width:0}
+.savings.v6-banking-both .deposit-option button{min-height:41px!important;white-space:normal!important;background:#255a80!important;font-size:13px!important;font-weight:850}
+.savings.v6-banking-both .deposit-option button:disabled{opacity:.42}
+.savings.v6-banking-both .deposit-option strong{font-size:15px!important}
+.savings.v6-banking-both .deposit-option .small{font-size:12px;line-height:1.3}
+.v6-deposit-instruction{background:#dceefa;color:#163d59!important;padding:7px 10px;border-radius:8px;border-left:4px solid #27beb8;font-size:13px!important;margin:8px 0!important}
+.savings.v6-banking-both .savings-grid .reason,.savings.v6-banking-both .savings-grid .small.reason{font-size:12px!important}
+/* Make gains appear as text, not a nested box. */
+.v6-performance-quick .v6-kpis .v6-financial-number{display:inline!important;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0!important;border-radius:0!important;font-size:inherit!important}
+.v6-performance-quick .v6-kpis strong{display:flex!important;align-items:center!important;min-height:28px!important;white-space:nowrap!important;overflow:visible!important}
+.v6-wealth-compact .v6-annual-change{display:block;font-size:13px;font-weight:850;margin:7px 0 0;line-height:1.3;color:#36dfab}
+.v6-wealth-compact .v6-annual-change.neg{color:#ff9ba7}
+.v6-review-dialog .v6-annual-flag{background:#f2c049!important;color:#132e47!important;font-weight:900!important;border-radius:8px!important;padding:9px 12px!important}
+.v6-review-dialog .v6-annual-flag *{color:#132e47!important}
+/* Compact vertical spacing: preserve every control and allow scrolling on narrow screens. */
+.v60-student{padding-top:3px!important}
+.v60-student .v60-news-strip{min-height:37px!important;margin:2px 0 5px!important;padding:5px 9px!important;gap:8px!important;flex-wrap:nowrap!important}
+.v60-student .v60-news-strip .v60-news-kicker{font-size:11px!important}
+.v60-student .v60-news-strip .v60-news-body{font-size:13px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1}
+.v60-student .v60-news-strip .btn{min-height:32px!important;font-size:12px!important;padding:5px 10px!important}
+.v60-student .group-tabs{margin:2px 0 5px!important}
+.v60-student .group-tabs button{min-height:34px!important;padding:6px 10px!important;font-size:14px!important}
+.v60-student .group-guide{padding:7px 10px!important;margin-bottom:6px!important}
+.v6-three-col .v6-list{gap:6px!important}
+.v6-three-col .v6-list .tile-main{padding:7px 9px!important}
+.v6-three-col .v6-list .tile{margin:0!important}
+.v6-three-col .v6-chart-column{padding:7px!important}
+.v6-three-col .v6-chart-column .v60-chart-panel{padding:6px!important}
+.v6-three-col .v6-chart-column .v60-chart-svg{max-height:170px!important}
+.v6-three-col .v6-chart-column .v60-chart-tabs{margin:4px 0!important}
+.v6-three-col .v6-chart-column .v6-chart-note{display:none}
+.v6-three-col .v6-trade-panel{padding:9px!important}
+.v6-three-col .v6-trade-panel .tp-description{line-height:1.35!important}
+.v6-three-col .v6-trade-panel .tp-sum{margin:4px 0!important}
+.v6-three-col .v6-trade-panel .v6-asset-metrics{margin:5px 0!important}
+@media(max-width:1190px){.v60-wallet:has(.v6-wallet-action){grid-template-columns:repeat(3,minmax(0,1fr))!important}.v6-wallet-action{grid-column:auto}.v6-wallet-action .v6-top-finish{min-height:48px!important}.v60-wallet{padding:5px 10px!important}.v60-wallet .w-item{padding:6px 9px!important}}
+@media(max-width:980px){.savings.v6-banking-both .savings-grid{grid-template-columns:1fr!important}.v6-landing{padding:7px 11px!important}}
+@media(max-width:650px){.v60-wallet:has(.v6-wallet-action){grid-template-columns:repeat(2,minmax(0,1fr))!important}.v6-home-controls .btn{flex:1 1 165px}.savings.v6-banking-both .deposit-choices{grid-template-columns:1fr}}

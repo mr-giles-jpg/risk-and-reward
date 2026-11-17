@@ -1,57 +1,31 @@
-<!DOCTYPE html>
-<html lang="en-AU">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark">
-  <title>Risk &amp; Reward V6.0 | Financial Challenge</title>
-  <style>
-:root{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#f1f6ff;background:#091a31}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:radial-gradient(820px 460px at 78% 0,#1c4469,transparent 72%),#091a31;line-height:1.55}
-main{max-width:1070px;margin:0 auto;padding:clamp(26px,5vw,65px) 26px}
-.eyebrow{color:#36d9c8;font-weight:850;letter-spacing:.14em;font-size:.82rem}
-h1{font-size:clamp(2.5rem,5vw,4rem);margin:.55rem 0 1.2rem;line-height:1.12}
-main>p{font-size:clamp(1rem,1.6vw,1.25rem);color:#c6dbed;max-width:900px;margin:.6rem 0 1.5rem}
-.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:34px 0}
-.card{border:1px solid #5a86a9;background:#183758;border-radius:18px;padding:28px;display:flex;flex-direction:column;align-items:flex-start;gap:13px}
-.card h2{font-size:clamp(1.4rem,2vw,1.9rem);margin:0;line-height:1.25}
-.card p{color:#d5e7f5;flex:1;font-size:1.08rem;line-height:1.6;margin:5px 0}
-a.button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:#13314d;background:#f8c042;border-radius:11px;padding:12px 20px;font-weight:850;font-size:1.05rem;min-height:48px}
-a.button:hover{background:#ffda70}a.button:focus-visible{outline:3px solid #fff;outline-offset:3px}
-.note{border:1px solid #a5cce1;background:#dceefa;color:#163c5a;border-radius:12px;padding:17px 20px}
-.note strong,.note li{color:#163c5a}
-ul{padding-left:22px;margin:8px 0}li{margin:7px 0}
-footer{font-size:.87rem;color:#bdcfdf;margin-top:27px}
-@media(max-width:680px){.cards{grid-template-columns:1fr}.card{padding:21px}main{padding:22px}}
-</style>
-</head>
+<!doctype html>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark"><title>Risk &amp; Reward V6.0 | Financial Challenge</title>
+<style>
+:root{font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;color:#edf6ff;background:#0a1c35;line-height:1.55}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(850px 470px at 78% 0%,#1a3c5e,transparent 72%),#0a1c35;min-height:100vh}
+main{max-width:1100px;margin:0 auto;padding:clamp(28px,5vw,64px) 24px}
+.eyebrow{color:#3cdbc9;font-size:13px;font-weight:850;letter-spacing:.13em}
+h1{font-size:clamp(42px,5.5vw,60px);line-height:1.08;margin:16px 0 18px;letter-spacing:.005em}
+.lead{font-size:clamp(16px,1.6vw,20px);color:#d8e7f7;max-width:850px;line-height:1.6;margin:0 0 26px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;margin:24px 0}
+.card{background:#18395c;border:1px solid #5687af;border-radius:17px;padding:28px;display:flex;flex-direction:column;gap:10px}
+.card h2{font-size:clamp(24px,2.4vw,29px);margin:0;color:#fff}
+.card p{font-size:17px;line-height:1.55;color:#dfedfb;flex:1;margin:10px 0}
+.button{display:inline-block;align-self:flex-start;background:#f8be40;color:#102b42;border:1px solid #fbd477;text-decoration:none;padding:12px 19px;font-size:17px;font-weight:850;border-radius:12px;min-height:50px}
+.button:hover{background:#ffd16c}.button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.note{background:#dceefa;border:1px solid #a7d4eb;border-radius:12px;padding:16px 20px;color:#163f5e;line-height:1.5;margin:28px 0 0}
+.note strong{color:#123652}.note p{margin:5px 0 0;font-size:15px}
+footer{color:#b8d0e5;font-size:13px;margin:26px 0}
+@media(max-width:690px){.grid{grid-template-columns:1fr;gap:12px}.card{padding:20px}.button{align-self:stretch;text-align:center}}
+</style></head>
 <body><main>
-  <div class="eyebrow">YEAR 9 ECONOMICS · V6.0 · CLASSROOM SIMULATION</div>
-  <h1>Risk &amp; Reward</h1>
-  <p>Choose a game part, build an investment strategy and see how economic news changes the risks and rewards of investing.</p>
-  <div class="cards">
-    <section class="card">
-      <div class="eyebrow">LESSON 5</div>
-      <h2>Part 1: Years 1–5</h2>
-      <p>Explore savings, ETFs, shares and investment choices. Begin with a calm economy before market events develop.</p>
-      <a class="button" href="part1.html">Start Part 1</a>
-    </section>
-    <section class="card">
-      <div class="eyebrow">LESSON 6</div>
-      <h2>Part 2: Years 6–10</h2>
-      <p>Load your Part 1 save or use the fictional Year 6 starter portfolio to explore economic changes, commodities and risk.</p>
-      <a class="button" href="part2.html">Open Part 2</a>
-    </section>
-  </div>
-  <div class="note"><strong>Saving your progress</strong>
-    <ul>
-      <li>Where available, use <strong>Save &amp; Exit</strong> to download your game save (.json)</li>
-      <li>Move the .json file to your school-approved OneDrive folder</li>
-      <li>When instructed, export your investment report as PDF for submission, if the browser permits</li><li>If saving or printing is blocked, use the <strong>Performance</strong> worksheet tables to copy your net worth, decisions, news and final financial results onto your paper worksheet</li>
-      <li>If returning mid-game, reopen the relevant part and choose <strong>Load saved game</strong></li>
-    </ul>
-  </div>
-  <p><small>V6 keeps browser progress separate from V5.9. If you were using the earlier game, save a JSON backup before switching.</small></p>
-  <footer>This educational game uses fictional investments and simulated prices. Game progress is saved in your browser when supported. This website does not automatically send your answers to your teacher.</footer>
+<div class="eyebrow">YEAR 9 ECONOMICS · V6.0 · FINANCIAL CHALLENGE</div>
+<h1>Risk &amp; Reward</h1>
+<p class="lead">Build your financial strategy over ten economic years. Explore saving, investing, income and risk as markets change.</p>
+<div class="grid">
+<section class="card"><h2>Part 1 · Years 1–5</h2><p>Explore savings, bonds, ETFs and shares. Make your first investments and review your financial decisions.</p><a class="button" href="part1.html">Start Part 1</a></section>
+<section class="card"><h2>Part 2 · Years 6–10</h2><p>Continue with your Part 1 JSON save, or start Year 6 with a fictional starter portfolio.</p><a class="button" href="part2.html">Start Part 2</a></section>
+</div>
+<div class="note"><strong>Saving your progress</strong><p>Use <b>Save &amp; Exit</b> during the game to download a JSON save. Keep the file in your school-approved folder. Next lesson, open the relevant part and select <b>Load saved game</b>. Your browser may also remember your progress, but keep a backup.</p></div>
+<footer>All investments, market prices and income are fictional and intended for classroom learning. Your answers are not automatically sent to your teacher.</footer>
 </main></body></html>
