@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark"><title>Risk &amp; Reward V6.0 | Financial Challenge</title>
+<html lang="en-AU"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="dark"><title>Risk &amp; Reward V6.1 | Financial Challenge</title>
 <style>
 :root{font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;color:#edf6ff;background:#0a1c35;line-height:1.55}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(850px 470px at 78% 0%,#1a3c5e,transparent 72%),#0a1c35;min-height:100vh}
@@ -13,19 +13,27 @@ h1{font-size:clamp(42px,5.5vw,60px);line-height:1.08;margin:16px 0 18px;letter-s
 .card p{font-size:17px;line-height:1.55;color:#dfedfb;flex:1;margin:10px 0}
 .button{display:inline-block;align-self:flex-start;background:#f8be40;color:#102b42;border:1px solid #fbd477;text-decoration:none;padding:12px 19px;font-size:17px;font-weight:850;border-radius:12px;min-height:50px}
 .button:hover{background:#ffd16c}.button:focus-visible{outline:3px solid #fff;outline-offset:3px}
-.note{background:#dceefa;border:1px solid #a7d4eb;border-radius:12px;padding:16px 20px;color:#163f5e;line-height:1.5;margin:28px 0 0}
+.primary-card{grid-column:1 / -1;border-color:#e6b94e;background:#18395c}.primary-card h2{font-size:clamp(26px,3vw,34px)}.legacy{margin:24px 0;color:#d2e5f4}.legacy summary{cursor:pointer;font-weight:750;font-size:16px;color:#bbd1e6;padding:10px 4px}.legacy .card{background:#102a46}.legacy .button{background:#234b72;color:#e8f5ff;border-color:#567b9d}.note{background:#dceefa;border:1px solid #a7d4eb;border-radius:12px;padding:16px 20px;color:#163f5e;line-height:1.5;margin:28px 0 0}
 .note strong{color:#123652}.note p{margin:5px 0 0;font-size:15px}
 footer{color:#b8d0e5;font-size:13px;margin:26px 0}
 @media(max-width:690px){.grid{grid-template-columns:1fr;gap:12px}.card{padding:20px}.button{align-self:stretch;text-align:center}}
 </style></head>
 <body><main>
-<div class="eyebrow">YEAR 9 ECONOMICS · V6.0 · FINANCIAL CHALLENGE</div>
+<div class="eyebrow">YEAR 9 ECONOMICS · V6.1 · FINANCIAL CHALLENGE</div>
 <h1>Risk &amp; Reward</h1>
 <p class="lead">Build your financial strategy over ten economic years. Explore saving, investing, income and risk as markets change.</p>
 <div class="grid">
-<section class="card"><h2>Part 1 · Years 1–5</h2><p>Explore savings, bonds, ETFs and shares. Make your first investments and review your financial decisions.</p><a class="button" href="part1.html">Start Part 1</a></section>
-<section class="card"><h2>Part 2 · Years 6–10</h2><p>Continue with your Part 1 JSON save, or start Year 6 with a fictional starter portfolio.</p><a class="button" href="part2.html">Start Part 2</a></section>
+<section class="card primary-card">
+  <h2>V6.1 · One continuous ten-year game</h2>
+  <p>Play Years 1–10 without switching parts. Explore 16 fictional investments, economic news, savings and portfolio decisions. Save your progress and continue another lesson.</p>
+  <a class="button" href="v6.1-preview.html">Launch V6.1 game</a>
+</section>
 </div>
-<div class="note"><strong>Saving your progress</strong><p>Use <b>Save &amp; Exit</b> during the game to download a JSON save. Keep the file in your school-approved folder. Next lesson, open the relevant part and select <b>Load saved game</b>. Your browser may also remember your progress, but keep a backup.</p></div>
+<details class="legacy"><summary>Older V6.0 games (for existing saves)</summary>
+<div class="grid">
+<section class="card"><h2>V6.0 Part 1 · Years 1–5</h2><p>Open the original Part 1 game if you need to continue an earlier save.</p><a class="button" href="part1.html">Open V6.0 Part 1</a></section>
+<section class="card"><h2>V6.0 Part 2 · Years 6–10</h2><p>Open the original Part 2 game for compatible legacy continuation.</p><a class="button" href="part2.html">Open V6.0 Part 2</a></section>
+</div></details>
+<div class="note"><strong>Saving your progress</strong><p>Use <b>Save &amp; Exit</b> during the game to download a JSON save. Keep the file in your school-approved folder. Next lesson, open the same game version and select <b>Load saved game</b>. Your browser may also remember your progress, but keep a backup.</p></div>
 <footer>All investments, market prices and income are fictional and intended for classroom learning. Your answers are not automatically sent to your teacher.</footer>
 </main></body></html>
