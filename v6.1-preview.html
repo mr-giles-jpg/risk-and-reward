@@ -2236,4 +2236,202 @@ delete window.RR61_DATA;
   };
 })();
 </script>
+
+<style id="rr61-portfolio-style">
+/* Risk & Reward V6.1: Portfolio check, trading confirmation and economic review */
+.rr61-portfolio-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(345px,41%);gap:14px;align-items:center;margin:3px 0 12px}
+.rr61-portfolio-row>.group-tabs{margin:0!important;display:flex;flex-wrap:wrap;gap:3px 5px;min-width:0;align-content:center;overflow:visible!important}
+.rr61-portfolio-row>.group-tabs button{min-width:0;font-size:14px;padding:6px 9px;min-height:40px;white-space:nowrap}
+.rr61-portfolio-check{position:relative;min-width:0;border:1px solid #476b8e;background:#152d4b;border-radius:13px;padding:9px 12px 10px;color:#eaf5ff;line-height:1.3}
+.rr61-pc-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px}
+.rr61-pc-title{font-size:12px;font-weight:900;letter-spacing:.045em;text-transform:uppercase;color:#d5ebfa}
+.rr61-pc-info-wrap{position:relative;display:inline-flex;align-items:center}
+.rr61-pc-info{width:24px;height:24px;border:1px solid #83a8c6;background:#264c70;color:#f4fbff;border-radius:50%;font-weight:900;font-size:14px;line-height:1;display:inline-grid;place-items:center;padding:0;cursor:help}
+.rr61-pc-info:hover,.rr61-pc-info:focus-visible{outline:2px solid #f7cb58;outline-offset:2px}
+.rr61-pc-popover{display:none;position:absolute;z-index:90;right:0;top:calc(100% + 7px);width:min(330px,84vw);background:#edf7ff;color:#173b59;border:1px solid #7eafcc;box-shadow:0 12px 26px #02162f88;border-radius:10px;padding:11px 13px;font-size:13px;font-weight:550;line-height:1.45;text-align:left}
+@media(hover:hover){.rr61-pc-info-wrap:hover .rr61-pc-popover{display:block}}
+.rr61-pc-info:focus-visible + .rr61-pc-popover,.rr61-pc-info[aria-expanded="true"] + .rr61-pc-popover{display:block}
+.rr61-pc-main{display:flex;justify-content:space-between;gap:8px;align-items:baseline;font-size:13px}
+.rr61-pc-main strong{font-weight:850;min-width:0;overflow-wrap:anywhere}
+.rr61-pc-percent{font-weight:950;font-size:17px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.rr61-pc-bar{display:flex;width:100%;height:11px;overflow:hidden;background:#38536e;border-radius:99px;margin:7px 0 4px}
+.rr61-pc-part-main{background:#65a6f5;height:100%}
+.rr61-pc-part-other{background:#32d0bc;height:100%}
+.rr61-pc-legend{display:flex;justify-content:space-between;gap:10px;color:#bcd5e8;font-size:11px;font-variant-numeric:tabular-nums}
+.rr61-pc-legend span:last-child{text-align:right}
+.rr61-pc-empty{margin:4px 0 0;font-size:12px;color:#bcd5e8}
+.rr61-pc-status{font-size:11px;color:#bcd5e8;font-weight:750}
+.rr61-pc-modal{margin:10px 0 8px;padding:11px 13px;border-color:#4a7799;background:#163858}
+.rr61-pc-modal .rr61-pc-title{font-size:13px}
+.rr61-pc-modal .rr61-pc-main{font-size:14px}
+.rr61-pc-modal .rr61-pc-bar{height:12px;margin-top:9px}
+.rr61-pc-modal .rr61-pc-legend{font-size:12px}
+.rr61-pc-modal .rr61-pc-heading{margin-bottom:7px}
+.v6-confirm-dialog .v6-confirm-warning{margin:9px 0!important;padding:11px 13px!important}
+.v6-confirm-dialog .v6-confirm-warning b{font-size:13px}
+.v6-confirm-dialog .v6-confirm-warning p{font-size:14px;line-height:1.42;margin:5px 0 0!important}
+.rr61-market-explain{background:#e6f3fb;border:1px solid #a9cfdf;border-left:5px solid #4f9cbf;border-radius:11px;padding:11px 14px;color:#163c58}
+.rr61-market-explain h3{font-size:16px;line-height:1.3;margin:0 0 8px;color:#163b58}
+.rr61-market-explain dl{display:grid;gap:8px;margin:0}
+.rr61-market-explain dl>div{display:grid;grid-template-columns:minmax(125px,24%) minmax(0,1fr);gap:9px;padding:0 0 6px;border-bottom:1px solid #c6dce9}
+.rr61-market-explain dl>div:last-child{border:0;padding-bottom:0}
+.rr61-market-explain dt{font-weight:900;color:#26526d;font-size:12px;letter-spacing:.025em;text-transform:uppercase}
+.rr61-market-explain dd{margin:0;color:#1d435d;font-size:14px;line-height:1.4}
+.rr61-market-explain .rr61-market-note{margin:9px 0 0;font-size:12px;color:#4a6a7e}
+@media(max-width:1120px){.rr61-portfolio-row{grid-template-columns:minmax(0,1fr) minmax(340px,43%);gap:8px}.rr61-portfolio-row>.group-tabs button{font-size:12.5px;padding:6px 7px}}
+@media(max-width:900px){.rr61-portfolio-row{grid-template-columns:1fr;gap:7px}.rr61-portfolio-row>.group-tabs{justify-content:flex-start}.rr61-portfolio-check{max-width:none}}
+@media(max-width:640px){.rr61-market-explain dl>div{grid-template-columns:1fr;gap:3px}.rr61-portfolio-row>.group-tabs button{font-size:12px;padding:7px 5px}.rr61-pc-modal{padding:9px 11px}}
+
+</style>
+<script id="rr61-portfolio-script">
+/* Risk & Reward V6.1: visual-only portfolio analysis and economic review */
+(()=>{
+  const factors = [
+    {key:'rates',re:/interest rates?|central bank|borrow(?:ing)?|inflation|repayments?|financ(?:ing|e) costs?|monetary/i,effect:'Interest-rate expectations can influence bond prices and borrowing costs for property and businesses.'},
+    {key:'property',re:/property|rental|rents?|housing|real estate|landlord/i,effect:'Rental demand, property values and financing costs can affect property investments.'},
+    {key:'trade',re:/freight|shipping|imports?|exports?|international trade|tariffs?|border|global supply chain|logistics/i,effect:'Trade and transport conditions can change costs and demand for importers and exporters.'},
+    {key:'consumer',re:/household|retail|shopp(?:ing|ers?)|consumer|spending|sales|demand from customers/i,effect:'Changes in household spending can influence businesses that sell goods and services.'},
+    {key:'energy',re:/oil|fuel|energy supply|electricity|power generation|petroleum/i,effect:'Energy supply and fuel demand can affect energy producers and businesses using energy.'},
+    {key:'copper',re:/copper|electrification|industrial materials|construction materials/i,effect:'Industrial production and materials demand can influence copper-related investments.'},
+    {key:'mining',re:/mining|minerals|resources orders|metals|mine production|infrastructure projects/i,effect:'Materials demand and production costs can influence mining and resource businesses.'},
+    {key:'tech',re:/software|technology|digital|tech companies|innovation/i,effect:'Product demand, competition and financing costs can influence technology businesses.'},
+    {key:'healthcare',re:/healthcare|health care|medical|hospitals|clinics/i,effect:'Essential healthcare demand can be steadier, but staff, regulation and costs still matter.'},
+    {key:'renewables',re:/renewables?|solar|wind power|energy storage|clean energy/i,effect:'Renewable energy projects can respond to demand, costs, financing and government policy.'},
+    {key:'safety',re:/uncertainty|confidence|safe haven|flight to safety|financial stress/i,effect:'Periods of uncertainty can change demand for defensive investments.'}
+  ];
+  function analysis(t){
+    // Reuse the existing engine's holdings and current-price calculations.
+    const holdings=Object.entries(t.hold||{}).filter(([id,h])=>AS(id)&&Number(h.qty)>0).map(([id,h])=>({id,v:Number(h.qty)*assetPrice(S,id)})).filter(h=>Number.isFinite(h.v)&&h.v>0).sort((a,b)=>b.v-a.v);
+    const total=holdings.reduce((sum,h)=>sum+h.v,0);
+    const largest=holdings[0]||null;
+    const pct=largest&&total>0?100*largest.v/total:0;
+    const holdingCount=holdings.length;
+    const status=holdingCount===0?'No investments':pct>=60?'High concentration':pct>=40?'Some concentration':'Relatively spread';
+    return {total,holdings,largest,pct,other:Math.max(0,100-pct),holdingCount,status,year:yearsNow(S)};
+  }
+  function investmentType(a){
+    if(!a)return 'none';
+    if(a.id==='BOND')return 'bond';
+    if(a.id==='TECHETF'||a.id==='RESETF')return 'sector-etf';
+    if(a.kind==='ETF')return 'broad-etf';
+    if(a.id==='PROP')return 'property';
+    if(a.group==='commodities')return 'commodity';
+    if(a.group==='shares')return 'company';
+    return 'fund';
+  }
+  function explain(t,x){
+    if(!x.largest)return 'Investing in an asset will show how much of your invested money it represents. Cash, savings, deposits and super are not included in this percentage.';
+    const a=AS(x.largest.id);
+    switch(investmentType(a)){
+      case 'bond':return 'Government bonds generally have lower price swings than company shares, but their prices can still react to interest rates. A large bond holding may limit growth opportunities.';
+      case 'broad-etf':return 'This ETF holds multiple companies, so one fund can provide diversification. It can still lose value when wider markets decline.';
+      case 'sector-etf':return 'This ETF holds several companies in one industry. It reduces dependence on a single company, but not exposure to an industry downturn.';
+      case 'property':return 'Property funds can receive rental-style income, but their value is sensitive to property markets, demand and borrowing costs.';
+      case 'commodity':return 'Commodity fund prices can move sharply with global supply and demand. Commodity funds in this game do not pay investment income.';
+      case 'company':return 'A large holding in one company increases the effect of company-specific news and results on your portfolio.';
+      default:return 'Spreading money across investment types can reduce some risks, but all investments can still lose value.';
+    }
+  }
+  function sectorCluster(x, ids){
+    const matches=x.holdings.filter(h=>ids.includes(h.id));
+    return {count:matches.length,share:x.total>0?100*matches.reduce((s,h)=>s+h.v,0)/x.total:0};
+  }
+  function guidance(t,x){
+    if(!x.largest)return 'You have not bought an investment yet. You can compare options before the next trading deadline.';
+    if(x.year<=1)return 'Only two investments are available in Year 1, so some concentration is normal while you learn how the market works.';
+    const a=AS(x.largest.id),type=investmentType(a),name=a.short||a.name,share=Math.round(x.pct);
+    if(x.year>=3 && x.pct>=60 && type==='company'){
+      const loss=Math.round(x.pct*0.20);
+      return `${share}% of your invested money is in ${name}, one company. A 20% fall in its price could reduce your invested portfolio by about ${loss}% if other prices did not change.`;
+    }
+    if(x.pct>=60 && type==='sector-etf')return `${share}% is in ${name}. This ETF includes multiple companies, but it remains exposed to one industry.`;
+    if(x.pct>=50 && type==='bond')return `${share}% of your invested money is in government bonds. Their prices can move with interest rates, and returns may be lower than some riskier investments.`;
+    if(x.pct>=60 && type==='broad-etf')return `${share}% is in ${name}. The ETF holds many companies, but a broad market downturn can still reduce its value.`;
+    if(x.pct>=50 && type==='property')return `${share}% is in a property fund. Rental income and property values can be affected by borrowing costs and economic demand.`;
+    if(x.pct>=50 && type==='commodity')return `${share}% is in ${name}. Prices can move sharply with supply and demand, and this fund does not pay investment income.`;
+    if(x.pct>=50 && type==='company')return `${share}% of your invested money is in ${name}. One company's disappointing results could have a large impact.`;
+    if(x.year>=3){
+      const tech=sectorCluster(x,['TECH','ORBIT','TECHETF']);
+      if(tech.count>=2&&tech.share>=45)return `${Math.round(tech.share)}% of your investments are connected to technology. Holding different companies and a sector ETF does not remove technology-sector risk.`;
+      const resource=sectorCluster(x,['MINE','ENERGY','RESETF','COPPER','OIL']);
+      if(resource.count>=2&&resource.share>=50)return `Several of your investments depend on resources and energy. They may react to some of the same economic developments.`;
+    }
+    const liquid=Number(t.cash||0)+Number(t.sav||0),totalWorth=totalNet(S,t);
+    if(x.year>=3&&liquid<100&&totalWorth>500)return 'Most of your money is invested or locked away. Consider whether you have enough accessible cash for future decisions.';
+    if(x.pct>=40)return `Your largest holding represents ${share}% of invested money. Consider how it differs from your other investments.`;
+    return `You hold ${x.holdingCount} investments with no single position above 40%. This spreads some concentration risk, but markets and shared industries can still fall.`;
+  }
+  function content(t,variant){
+    const x=analysis(t),modal=variant==='modal',a=x.largest?AS(x.largest.id):null;
+    if(!a){
+      return `<section class="rr61-portfolio-check ${modal?'rr61-pc-modal':''}" aria-label="Portfolio check"><div class="rr61-pc-heading"><b class="rr61-pc-title">Portfolio check</b><span class="rr61-pc-status">No investments</span></div><p class="rr61-pc-empty">No investments held yet. Buy an investment to see your concentration.</p></section>`;
+    }
+    const share=Math.max(0,Math.min(100,x.pct)),shown=Math.round(share),otherShown=100-shown;
+    const name=escapeHtml(a.short||a.name),tip=escapeHtml(explain(t,x));
+    const bar=`<div class="rr61-pc-bar" role="img" aria-label="${shown}% in ${name}, ${otherShown}% in other investments"><span class="rr61-pc-part-main" style="width:${share.toFixed(3)}%"></span><span class="rr61-pc-part-other" style="width:${(100-share).toFixed(3)}%"></span></div>`;
+    const tipId=modal?'rr61-pc-tip-modal':'rr61-pc-tip-live';
+    return `<section class="rr61-portfolio-check ${modal?'rr61-pc-modal':''}" aria-label="Portfolio check"><div class="rr61-pc-heading"><b class="rr61-pc-title">Portfolio check</b><span class="rr61-pc-info-wrap"><button class="rr61-pc-info" type="button" aria-label="What does this mean?" aria-controls="${tipId}" aria-describedby="${tipId}" aria-expanded="false" onclick="UI.rr61ToggleInfo(this)">ⓘ</button><span class="rr61-pc-popover" id="${tipId}" role="tooltip">${tip}</span></span></div><div class="rr61-pc-main"><strong>Largest: ${name} <span class="rr61-pc-status">${escapeHtml(a.ticker)}</span></strong><span class="rr61-pc-percent">${shown}%</span></div>${bar}<div class="rr61-pc-legend"><span>${shown}% ${name}</span><span>${otherShown}% other investments</span></div></section>`;
+  }
+  UI.rr61ToggleInfo=function(button){
+    const open=button.getAttribute('aria-expanded')==='true';
+    button.setAttribute('aria-expanded',String(!open));
+  };
+  document.addEventListener('click',event=>{
+    document.querySelectorAll('.rr61-pc-info[aria-expanded="true"]').forEach(button=>{
+      if(!button.closest('.rr61-pc-info-wrap')?.contains(event.target))button.setAttribute('aria-expanded','false');
+    });
+  });
+  // Single calculation and message functions shared by the persistent panel and the confirmation.
+  const oldInvest=invest;
+  invest=function(t){
+    const html=oldInvest(t),node=document.createElement('div');node.innerHTML=html;
+    const tabs=node.querySelector('.group-tabs');
+    if(tabs){
+      const row=document.createElement('div');row.className='rr61-portfolio-row';
+      tabs.replaceWith(row);row.appendChild(tabs);
+      const widget=document.createElement('div');widget.innerHTML=content(t,'live');
+      row.appendChild(widget.firstElementChild);
+    }
+    return node.innerHTML;
+  };
+  const oldMaybeOverlay=maybeOverlay;
+  maybeOverlay=function(){
+    oldMaybeOverlay();
+    if(!(S.phase==='trading'&&S.ui?.v6ConfirmFinish&&S.ui?.view==='student'))return;
+    const dlg=document.querySelector('#modal .v6-confirm-dialog');
+    if(!dlg)return;
+    const warning=dlg.querySelector('.v6-confirm-warning');
+    if(!warning)return;
+    const t=findTeam();
+    warning.querySelector('b').textContent=yearsNow(S)===1?'A first-year consideration':'Something to consider';
+    const p=warning.querySelector('p');if(p)p.textContent=guidance(t,analysis(t));
+    warning.insertAdjacentHTML('beforebegin',content(t,'modal'));
+  };
+  // Use only currently revealed economic information, not hidden future outcomes.
+  const oldResultsOverlay=resultsOverlay;
+  resultsOverlay=function(t){
+    const html=oldResultsOverlay(t);
+    if(!html)return html;
+    const container=document.createElement('div');container.innerHTML=html;
+    const area=container.querySelector('.v6-price-explain');
+    if(!area)return html;
+    const development=area.querySelector('p')?.textContent?.trim()||'';
+    if(!development)return html;
+    const publicText=[development,S.beat?.title||''].join(' ');
+    let topics=factors.filter(f=>f.re.test(publicText)).slice(0,2);
+    // More than one factor can matter, but avoid pretending news explains every return.
+    const marketEffects=topics.length?topics.map(f=>f.effect).join(' '):'No major industry shock was identified. Investments can still change value as expectations and ordinary trading evolve.';
+    const held=Object.entries(t.hold||{}).filter(([id,h])=>h.qty>0&&AS(id));
+    const linked=held.map(([id,h])=>{
+      const a=AS(id),score=topics.reduce((acc,f)=>acc+Math.abs(Number(a.exp?.[f.key]||0)),0);
+      return {a,score};
+    }).filter(x=>x.score>=0.35).sort((a,b)=>b.score-a.score).slice(0,2);
+    const relevant=linked.length?`<div><dt>Your investments</dt><dd>${linked.map(x=>escapeHtml(x.a.short||x.a.name)).join(' and ')} ${linked.length===1?'has':'have'} exposure to the economic factors discussed. Their actual price movements also depend on other influences.</dd></div>`:'';
+    area.className='v6-price-explain rr61-market-explain';
+    area.innerHTML=`<h3>What influenced the market this cycle?</h3><dl><div><dt>Economic development</dt><dd>${escapeHtml(development)}</dd></div><div><dt>Possible market effects</dt><dd>${escapeHtml(marketEffects)}</dd></div>${relevant}</dl><p class="rr61-market-note">News is one influence on prices, not a guaranteed forecast. Normal market fluctuations also matter.</p>`;
+    return container.innerHTML;
+  };
+})();
+
+</script>
 </body></html>
