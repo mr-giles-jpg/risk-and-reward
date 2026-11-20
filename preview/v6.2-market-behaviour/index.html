@@ -1422,7 +1422,12 @@ function createEngine(stage1,stage2,opts={}){
       const stress=profile?businessStrength[a.id]:0;
       const marketVol=cycle<3?.67:cycle<6?.78:regime==='downturn'?1.19:regime==='supply'?1.09:regime==='rates'?1.02:1;
       const stability=profile?clamp(profile.baseline-.13*stress,.73,1.65):1;
-      const ordinary=drift+(sigma*z)*marketVol*stability;
+      // In ordinary growth/rates stories, an asset with little exposure to the
+      // specific development need not exhibit the same ordinary turbulence as
+      // an affected asset. Crisis/supply scenarios retain broader volatility.
+      const relevance=Math.min(1,(Math.abs(expected)+Math.abs(surprise))/.025);
+      const relevanceVol=(regime==='growth'||regime==='rates')?.72+.28*relevance:1;
+      const ordinary=drift+(sigma*z)*marketVol*stability*relevanceVol;
       // Occasional company-specific surprises. These are shared for every student
       // using the same class code, and appear in the cycle review after settlement.
       const companyRandom=RNG(hash(`${seed}:company:${cycle}:${a.id}`));
