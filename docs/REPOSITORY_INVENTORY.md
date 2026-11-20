@@ -5,13 +5,13 @@ Last reviewed: 20 November 2026.
 ## Keep in active development
 - `develop/index.html` is the **only** working game source. It combines the approved V6.1 interface refinements with the experimental V6.2 market engine
 - `tests/regression.test.cjs` validates code structure, four storyline branches, same-code market determinism, and asset settings
-- `tests/browser.spec.cjs` covers smoke tests and banking layout; these tests require a successful GitHub Actions run before being called validated
-- `.github/workflows/develop-ci.yml` currently runs regression and browser checks, then attempts to update `main/preview/develop/index.html`
+- `tests/browser.spec.cjs` covers smoke tests and banking layout; the draft V6.2 PR passed the workflow on 20 November 2026
+- `.github/workflows/develop-ci.yml` runs read-only regression and browser checks; `.github/workflows/pages.yml` deploys the live game and tested preview together as a GitHub Pages artifact
 - `docs/RELEASE_PROCESS.md` explains releases
 
 ## Keep in production
 - `main/index.html` is the site launched by the root GitHub Pages URL
-- `main/preview/develop/index.html` is a published copy of the last manually established development baseline (workflow updates may follow once CI succeeds)
+- `main/preview/develop/index.html` is a historical snapshot; after switching Pages to **GitHub Actions**, the Pages artifact publishes `develop/index.html` at the same URL
 - `README.md` and `docs/` contain project information
 
 ## Legacy: retain until links and functionality are tested
@@ -33,7 +33,7 @@ Last reviewed: 20 November 2026.
 **No confirmed-safe deletions identified in this audit.** Do not delete files merely because they are old; GitHub Pages may still serve their exact URLs. Use a later, separately reviewed clean-up PR when the legacy routes have been tested and release tags exist.
 
 ## Known issue requiring attention
-The screenshot of `develop` shows a failed GitHub check on an earlier commit. Check **Actions → Validate and publish development preview → Regression and browser checks** for the exact failed step. The GitHub connector available to this project did not expose the failed run log, so its cause remains unverified. Do not treat automation as passing until the workflow run is green.
+The earlier failed run was caused by Playwright 1.55 running on an unsupported Ubuntu 26.04 image. Pinning CI to Ubuntu 24.04 fixed the problem. The PR-triggered **Validate development game** regression and Chromium browser checks passed on 20 November 2026. Full gameplay and save/load scenarios remain outside this smoke suite.
 
 ## Avoiding renewed divergence and unsafe releases
-The current GitHub Actions workflow copies a tested `develop` HTML file into a preview path on `main`. Such preview commits naturally make `main` and `develop` diverge, and branch protection requiring PRs may block the bot push. A future improvement is to publish a combined Pages artifact using a dedicated deployment workflow rather than writing preview commits to `main`. Switching this requires deliberate Pages source configuration and a verified production snapshot to prevent disruption.
+The current Pages workflow builds a combined artifact from `main` production and `develop` preview. It no longer makes bot commits to `main`. To enable automated deployment, set **Settings → Pages → Source: GitHub Actions**, run the **Publish Risk & Reward website** workflow, and verify both the live and preview URLs.
