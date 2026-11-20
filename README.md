@@ -1,43 +1,50 @@
-# Risk & Reward V6.0
+# Risk & Reward
 
-Year 9 Economics classroom finance simulation.
+**Year 9 Economics financial literacy simulation** | Perth, WA | Fictional investments and classroom market scenarios.
 
-## Classroom site
+## Play and preview
+- **Live student game:** https://mr-giles-jpg.github.io/risk-and-reward/
+- **Latest development preview:** https://mr-giles-jpg.github.io/risk-and-reward/preview/develop/
+- **Source of live game:** `main/index.html`
+- **Source of development game:** `develop/index.html`
+- **Reference shared class market code:** `9HASS-A`
 
-https://mr-giles-jpg.github.io/risk-and-reward/
+> The development preview is for testing. It is not the approved live student version. Existing student saves should be backed up before any major version changes.
 
-- **Part 1:** Years 1–5, saving, bonds, ETFs, shares and investment decisions
-- **Part 2:** Years 6–10, importing the Part 1 JSON save or using a clearly identified Year 6 starter portfolio
-- The complete V6 preview remains at `/preview/v6/`.
+## Versions
+| Version | Status | Purpose |
+|---|---|---|
+| V6.1 | Current live baseline | Unified ten-year student game |
+| V6.2 | In development | Consolidated interface, adaptive market news and individual company risk |
+| V6.0 / V5.x | Historical | Earlier classroom versions available through prior commits and backup branches |
 
-## Version and backup
+The game's ten-year sequence contains three trading cycles per year. The V6.2 development engine models 16 investments and four multi-year economic storylines with four outcome branches each.
 
-- **Classroom release:** V6.0, promoted 17 November 2026
-- **Previous live version:** V5.9
-- **V5.9 backup branch:** `backup/v5.9-live-before-v6-2026-11-17`
-- V6 uses its existing `_v60_stage2` browser storage key, which does not overwrite V5.9 browser saves
-- Game save/export is JSON; student PDF reports require browser Print / Save as PDF
+## Where files belong
+| Path | Purpose | Change policy |
+|---|---|---|
+| `index.html` on `main` | Live student site | Update only after approved release |
+| `index.html` on `develop` | Canonical cumulative development game | Every new development change builds on this |
+| `preview/develop/index.html` on `main` | Published development preview | Generated from a tested `develop` commit |
+| `preview/v6.2-consolidated/`, `preview/v6.2-market-behaviour/` etc | Historical previews | Retain temporarily for comparison; never use as current source |
+| `part1.html`, `part2.html` | Legacy two-part release | Keep while linked from the live game or historical pages |
+| `v6-*.css`, `v6-*.js` | Dependencies of legacy parts | Do not delete independently |
+| `tests/` | Automated market and browser checks | Maintain with code changes |
+| `.github/workflows/` | Continuous integration and preview publishing | Review before changing |
+| `docs/` | Release process and audit notes | Keep current |
 
-## V6 classroom revisions
+See [Repository file inventory](docs/REPOSITORY_INVENTORY.md) and [Development and release process](docs/RELEASE_PROCESS.md).
 
-- Three-column desktop investing: smaller asset cards, graph and trading controls
-- Risk badges on cards and volatility/price swings above graphs
-- Consistent pop-ups based on the welcome screen
-- Year 1 Cycle 1 purchase-reason question moved to the first cycle review
-- More consistent widths across home-page sections
-- Original V6 Stage 2 market model retained
+## Contributing and releases
+1. Work from `develop`, or create a short-lived feature branch based on `develop`
+2. Preserve approved features and run the regression checks
+3. Review changes in the development preview
+4. Promote a tested version to `main` only with explicit approval
+5. Record the release SHA and a version tag; do not treat copied previews as independent development baselines
 
-The public GitHub repository contains the HTML game and its fictional market model, not student submissions.
+A failed GitHub Actions check means the build is **not yet verified**. It does not necessarily mean the live website is broken.
 
-
-## Classroom refinements, 17 November 2026
-- Economic news is phrased by industry, with uncertainty and potential outcomes; settlement reviews describe news effects versus market movements
-- Review pop-ups have colour-coded asset dots, simplified explanations and prominent income/interest/super metrics
-- Year-end review wording and timing refined (12-second minimum review)
-- New asset introductions have a 7-second read period
-- Trading countdown extended to 4 minutes for the first cycle and 3 minutes for subsequent cycles; students can finish earlier
-- Portfolio performance shows starting net worth and every completed cycle, with start/end values for each year
-- Banking uses compact Savings / Fixed-term deposit tabs; trading has dedicated plus and minus unit buttons
-- Native JavaScript confirmation dialogs replaced with in-game dialogs
-- Home-page colours match the self-contained edition, with Main menu links and restart controls inside each game
-- The financial engine and save format are otherwise unchanged
+## Important notes
+- The repository contains the game code and fictional market model, not submitted student work
+- Student progress uses browser storage and downloadable JSON saves
+- Historical preview URLs may remain publicly reachable, so removing old files can break previously shared links
