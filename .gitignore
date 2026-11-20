@@ -1,0 +1,14 @@
+# Local dependencies and generated QA artefacts
+node_modules/
+test-results/
+playwright-report/
+coverage/
+*.log
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local student saves and temporary outputs (do not remove existing tracked files)
+Risk_Reward_*_Year*.json
+Risk_Reward_*_Part*.json
