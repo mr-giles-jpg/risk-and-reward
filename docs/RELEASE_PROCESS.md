@@ -3,7 +3,7 @@
 ## Current canonical builds
 - **Production:** `main/index.html`, the student-facing live game
 - **Development source of truth:** `develop/index.html`, initially consolidated V6.2
-- **Stable development preview (generated copy):** `main/preview/develop/index.html`
+- **Stable development preview (deployed artifact):** `/preview/develop/index.html` in the Pages website, assembled from `develop/index.html`
 - **GitHub Pages preview:** https://mr-giles-jpg.github.io/risk-and-reward/preview/develop/
 - **Reference classroom economy:** `9HASS-A`
 - **Current structure:** 10 years, 3 cycles per year, 16 investments
@@ -15,24 +15,18 @@
 2. For substantial work, make a short-lived feature branch from `develop`. Integrate it into `develop` after reviewing the diff and running checks.
 3. Preserve previously approved features unless a specific change or removal has been agreed.
 4. Every `develop` update must be cumulative. Never overwrite it with a separately developed full HTML build.
-5. The stable preview is generated from `develop/index.html` after the validation workflow succeeds. **Do not edit the generated preview independently.**
+5. After successful development CI, `.github/workflows/pages.yml` assembles the existing `main` production game and `develop` preview in one Pages artifact. **Do not edit the generated preview independently.**
 6. Keep production `main/index.html` unchanged until explicit approval. Production releases are controlled promotions from a tested development commit.
 7. Give each major release a tag (e.g. `v6.2.0`) after approval. Keep older release tags to support rollback.
 8. Record the tested commit SHA, features changed, class code, known limitations and test evidence in each release summary.
 
-## Automated validation
-Workflow: `develop/.github/workflows/develop-ci.yml`.
-
-On a push to `develop`, or a PR to `develop` or `main`, the workflow:
-- Compiles each embedded JavaScript block
-- Checks all previously approved UI-refinement code is present
-- Tests 30 cycles and 16 assets, class-code repeatability, and `9HASS-A` branches
-- Checks asset risk differences and an unrelated Gold/news attribution example
-- Runs Chromium smoke tests including savings/term-deposit order and screen widths of 390, 768, 1024 and 1366 px
-- Only after a successful `develop` push, copies that *tested commit* to `main/preview/develop/index.html`
-- Skips publishing older builds when a newer `develop` commit exists
-
-**Important:** CI execution and GitHub Pages refresh must be confirmed in GitHub Actions. A committed workflow alone does not prove a run succeeded. GitHub may need Actions enabled and GITHUB_TOKEN write access to publish the preview. If deployment fails, leave production unchanged and check the Actions logs.
+## Automated validation and Pages deployment
+- `.github/workflows/develop-ci.yml` tests every `develop` push and PR to `develop` or `main`. It runs Node market checks and Chromium browser checks on Ubuntu 24.04.
+- `.github/workflows/pages.yml` runs on `main` pushes or after **successful push-triggered** development checks. It fetches `main` and `develop`, serves production from `main`, adds `develop/index.html` at `/preview/develop/index.html` and publishes the combined static site through `actions/deploy-pages`.
+- The Pages workflow no longer writes preview commits onto `main`. It skips outdated development results.
+- **One-time repository setting required:** Settings → Pages → Build and deployment → Source: **GitHub Actions**. Until this is configured, the deployment may fail; keep the existing live game and preview untouched.
+- A green CI check does not itself prove that Pages deployed. Verify the `Publish Risk & Reward website` workflow and both URLs after switching source.
+- Use `9HASS-A` for regression testing and retain the 16-asset, 30-cycle checks.
 
 ## Approved UI checklist
 - [ ] Savings amount has +$100 and -$100 alongside; Deposit Max and Withdraw Max remain below
