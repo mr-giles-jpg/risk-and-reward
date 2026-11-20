@@ -1,0 +1,73 @@
+name: Validate and publish development preview
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: Regression and browser checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check embedded scripts and market behaviour
+        run: node --test tests/regression.test.cjs
+      - name: Install Chromium test runner
+        run: npm install --no-save @playwright/test@1.55.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local game server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/risk-reward-server.log 2>&1 &
+          for i in $(seq 1 20); do
+            if curl --silent --fail http://127.0.0.1:4173/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/risk-reward-server.log
+          exit 1
+      - name: Test game in Chromium
+        run: npx playwright test tests/browser.spec.cjs --reporter=line --workers=1
+
+  publish-preview:
+    name: Publish tested development preview
+    needs: [regression]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: risk-reward-development-preview
+      cancel-in-progress: false
+    steps:
+      - name: Read tested development version
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+          path: development
+      - name: Read GitHub Pages source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: website
+      - name: Update only the development preview file
+        run: |
+          mkdir -p website/preview/develop
+          cp development/index.html website/preview/develop/index.html
+          cd website
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add preview/develop/index.html
+          if git diff --cached --quiet; then
+            echo "Preview already matches the tested develop branch."
+          else
+            git commit -m "Publish tested develop preview"
+            git push origin HEAD:main
+          fi
