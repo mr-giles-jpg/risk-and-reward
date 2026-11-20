@@ -25,7 +25,7 @@ The game's ten-year sequence contains three trading cycles per year. The V6.2 de
 |---|---|---|
 | `index.html` on `main` | Live student site | Update only after approved release |
 | `index.html` on `develop` | Canonical cumulative development game | Every new development change builds on this |
-| `preview/develop/index.html` on `main` | Published development preview | Generated from a tested `develop` commit |
+| `/preview/develop/` on GitHub Pages | Published development preview | Deployed via Pages artifact from a tested `develop` commit |
 | `preview/v6.2-consolidated/`, `preview/v6.2-market-behaviour/` etc | Historical previews | Retain temporarily for comparison; never use as current source |
 | `part1.html`, `part2.html` | Legacy two-part release | Keep while linked from the live game or historical pages |
 | `v6-*.css`, `v6-*.js` | Dependencies of legacy parts | Do not delete independently |
@@ -41,6 +41,7 @@ See [Repository file inventory](docs/REPOSITORY_INVENTORY.md) and [Development a
 3. Review changes in the development preview
 4. Promote a tested version to `main` only with explicit approval
 5. Record the release SHA and a version tag; do not treat copied previews as independent development baselines
+6. GitHub Pages uses **Settings → Pages → Source: GitHub Actions**, deploying `main` production and the tested `develop` preview together
 
 A failed GitHub Actions check means the build is **not yet verified**. It does not necessarily mean the live website is broken.
 
